@@ -1,9 +1,11 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, library_prefixes
 
+// import 'dart:ui';
+
 import 'dart:ui';
 
 import 'package:chase_your_goals/data/models/linear_function.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide TextStyle;
 import 'dart:math' as Math;
 
 ///if you want to have the area beneth the graph line coloured then pass this colour
@@ -98,9 +100,9 @@ class _SimpleLinearGraphState extends State<SimpleLinearGraph> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(width: 2.0, color: Colors.red),
-      ),
+      // decoration: BoxDecoration(
+      //     border: Border.all(width: 2.0, color: Colors.red),
+      //     ),
       child: SizedBox(
         width: 200.0,
         height: 100.0,
@@ -128,10 +130,10 @@ class _SimpleLinearGraphState extends State<SimpleLinearGraph> {
                   painter: SingleLinearGraphPainter(
                     widget.graphPoints[i],
                     null,
-                    maxX: _maxX,
-                    maxY: _maxY,
-                    minX: _minX,
-                    minY: _minY,
+                    maxX: _maxX + (0.1 * _minX),
+                    maxY: _maxY + (0.1 * _maxY),
+                    minX: _minX - (0.1 * _minX),
+                    minY: _minY - (0.1 * _maxY),
                     touchOffset: touchOffset,
                   ),
                 ),
@@ -209,10 +211,7 @@ class SingleLinearGraphPainter extends CustomPainter {
 
     canvas.drawPoints(
       PointMode.points,
-      points
-          .map((e) => Offset(size.width * _getLocalPosPercents(e).dx,
-              size.height * (_getLocalPosPercents(e).dy)))
-          .toList(),
+      points.map((e) => _getLocalPosition(e, size)).toList(),
       pointPaint,
     );
 
@@ -225,18 +224,18 @@ class SingleLinearGraphPainter extends CustomPainter {
       //first of all we're checking for all potential hit targets
       for (Offset point in points) {
         Rect rect = Rect.fromCenter(
-            center: Offset(point.dx, size.height),
+            center: Offset(_getLocalPosition(point, size).dx, size.height),
             width: horizontalHitZone,
             height: size.height);
         if (rect.contains(touchOffset!)) {
-          print(point);
+          //print(point);
           potentialHitTargets.add(point);
         }
       }
 
       //with all potential targets created we're looking for the closes one to touch
       if (potentialHitTargets.length == 1) {
-        print("hit ${potentialHitTargets[0]}");
+        //print("hit ${potentialHitTargets[0]}");
         canvas.drawPoints(
             PointMode.points,
             [
@@ -246,27 +245,104 @@ class SingleLinearGraphPainter extends CustomPainter {
                       (_getLocalPosPercents(potentialHitTargets[0]).dy))
             ],
             activePointPaint);
+        _drawParagraph(potentialHitTargets[0], size, canvas, paint);
       } else if (potentialHitTargets.length > 1) {
         Offset closestHorizontallyPoint = potentialHitTargets[0];
 
         for (Offset point in potentialHitTargets) {
-          if ((closestHorizontallyPoint.dx - touchOffset!.dx).abs() <
-              (point.dx - touchOffset!.dx).abs())
+          if ((_getLocalPosition(closestHorizontallyPoint, size).dx -
+                      touchOffset!.dx)
+                  .abs() <
+              ((_getLocalPosition(point, size).dx - touchOffset!.dx).abs()))
             closestHorizontallyPoint = point;
         }
-        print("hit $closestHorizontallyPoint");
+        //print("hit $closestHorizontallyPoint");
         canvas.drawPoints(
-            PointMode.points,
-            [
-              Offset(
-                  size.width *
-                      _getLocalPosPercents(closestHorizontallyPoint).dx,
-                  size.height *
-                      (_getLocalPosPercents(closestHorizontallyPoint).dy))
-            ],
-            activePointPaint);
+          PointMode.points,
+          [
+            Offset(
+                size.width * _getLocalPosPercents(closestHorizontallyPoint).dx,
+                size.height *
+                    (_getLocalPosPercents(closestHorizontallyPoint).dy))
+          ],
+          activePointPaint,
+        );
+        _drawParagraph(closestHorizontallyPoint, size, canvas, paint);
       }
     }
+  }
+
+  Paragraph _getParagraph(Offset point, double width) {
+    final ParagraphStyle paragraphStyle =
+        ParagraphStyle(textAlign: TextAlign.center);
+    final TextStyle textStyle = TextStyle(color: Colors.white);
+    final ParagraphBuilder paragraphBuilder = ParagraphBuilder(paragraphStyle)
+      ..pushStyle(textStyle)
+      ..addText("${point.dx}, ${point.dy}");
+    return paragraphBuilder.build()..layout(ParagraphConstraints(width: width));
+  }
+
+  void _drawParagraph(Offset point, Size size, Canvas canvas, Paint paint) {
+    Offset pointLocalPos = _getLocalPosition(point, size);
+    Paragraph paragraph = _getParagraph(point, 100.0);
+    late Rect textBackground;
+    // Rect.fromPoints(
+    //   pointLocalPos.translate(5.0, -10),
+    //   Offset(
+    //     paragraph.width + pointLocalPos.translate(5.0, -10).dx,
+    //     pointLocalPos.translate(5.0, -10).dy + (paragraph.height * 1.5),
+    //   ),
+    // ).shift(
+    //   Offset(0, -paragraph.height),
+    // );
+
+    late RRect textBg;
+
+    if (touchOffset!.dx >= size.width / 2.0) {
+      textBackground = Rect.fromPoints(
+        pointLocalPos.translate(-5.0, -10),
+        Offset(
+          pointLocalPos.translate(-5.0, -10).dx - paragraph.width,
+          pointLocalPos.translate(-5.0, -10).dy + (paragraph.height * 1.5),
+        ),
+      ).shift(
+        Offset(0, -paragraph.height),
+      );
+      textBg = RRect.fromRectAndCorners(
+        textBackground,
+        topLeft: const Radius.circular(10.0),
+        topRight: const Radius.circular(10.0),
+        bottomLeft: const Radius.circular(10.0),
+      );
+      //print("more than half of graph");
+    } else {
+      textBackground = Rect.fromPoints(
+        pointLocalPos.translate(5.0, -10),
+        Offset(
+          paragraph.width + pointLocalPos.translate(5.0, -10).dx,
+          pointLocalPos.translate(5.0, -10).dy + (paragraph.height * 1.5),
+        ),
+      ).shift(
+        Offset(0, -paragraph.height),
+      );
+      textBg = RRect.fromRectAndCorners(
+        textBackground,
+        topLeft: const Radius.circular(10.0),
+        topRight: const Radius.circular(10.0),
+        bottomRight: const Radius.circular(10.0),
+      );
+    }
+
+    // canvas.drawRRect(
+    //   RRect.fromRectAndRadius(textBackground, const Radius.circular(10.0)),
+    //   paint,
+    // );
+    canvas.drawRRect(textBg, paint);
+    canvas.drawParagraph(
+      paragraph,
+      textBackground.topLeft
+          .translate(0.0, (textBackground.height - paragraph.height) / 2.0),
+    );
   }
 
   @override

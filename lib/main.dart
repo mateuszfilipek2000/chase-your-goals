@@ -33,10 +33,10 @@ class MyHomePage extends StatelessWidget {
       body: Center(
         child: SimpleLinearGraph(
           graphPoints: graphPoints,
-          maxX: 30,
-          maxY: 110,
-          minX: 5,
-          minY: 40,
+          // maxX: 30,
+          // maxY: 110,
+          // minX: 5,
+          // minY: 40,
         ),
       ),
     );
@@ -46,6 +46,9 @@ class MyHomePage extends StatelessWidget {
 List<List<Offset>> graphPoints = [
   [
     const Offset(10, 100),
+    const Offset(30, 60),
+    const Offset(35, 50),
+    const Offset(40, 30),
     const Offset(20, 50),
     const Offset(15, 70),
   ],
