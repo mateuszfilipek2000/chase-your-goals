@@ -13,8 +13,8 @@ class LinearFunction {
       _a = (p2.dy - p1.dy) / (p2.dx - p1.dx);
       _b = ((p2.dx * p1.dy) - (p1.dx * p2.dy)) / (p2.dx - p1.dx);
     } catch (e) {
-      print("Dividing by zero");
-      print(e == "Dividing by double zero");
+      // print("Dividing by zero");
+      // print(e == "Dividing by double zero");
       return LinearFunction(0, 0);
     }
     return LinearFunction(_a, _b);

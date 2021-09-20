@@ -1,4 +1,3 @@
-import 'package:chase_your_goals/presentation/widgets/custom_progress_indicator.dart';
 import 'package:chase_your_goals/presentation/widgets/simple_linear_graph/simple_linear_graph.dart';
 import 'package:flutter/material.dart';
 
@@ -33,10 +32,10 @@ class MyHomePage extends StatelessWidget {
       body: Center(
         child: SimpleLinearGraph(
           graphPoints: graphPoints,
-          // maxX: 30,
-          // maxY: 110,
-          // minX: 5,
-          // minY: 40,
+          maxX: 50,
+          maxY: 115,
+          minX: 0,
+          minY: 20,
         ),
       ),
     );
