@@ -1,16 +1,19 @@
-# chase_your_goals
+# DISCLAIMER
 
-A new Flutter project.
+App is in development.
 
-## Getting Started
+# Chase your goals
 
-This project is a starting point for a Flutter application.
+Flutter to-do app made to practice custom painters, the use of sqflite and to improve flutter skills. Currently non-functional.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Used packages: 
+    Packages currently added to pubspec.yaml (They might not be used, as of right now, but will probably be used in future):
+    * Freezed
+    * Bloc
+    * Hydrated_bloc
+    * Sqflite
+    * Moor
+    * Test
+    * Flutter_secure_storage
+    * Bloc_test
+    

@@ -1,4 +1,5 @@
-import 'package:chase_your_goals/presentation/widgets/simple_linear_graph/simple_linear_graph.dart';
+import 'package:chase_your_goals/core/config/routes/app_routes.dart';
+import 'package:chase_your_goals/widgets/simple_linear_graph/simple_linear_graph.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,25 +13,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: const [
+        Locale("en", "US"),
+        Locale("pl", "PL"),
+      ],
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
+      onGenerateRoute: AppRoutes.onGeneratedRoute,
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: SimpleLinearGraph(
+          height: 130.0,
+          width: 250.0,
           graphPoints: graphPoints,
           maxX: 50,
           maxY: 115,

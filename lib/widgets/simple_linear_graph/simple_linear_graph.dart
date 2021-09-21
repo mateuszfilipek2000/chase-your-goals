@@ -3,8 +3,8 @@
 // import 'dart:ui';
 
 import 'dart:ui';
-import 'package:chase_your_goals/presentation/widgets/simple_linear_graph/axis_painter.dart';
-import 'package:chase_your_goals/presentation/widgets/simple_linear_graph/linear_graph_painter.dart';
+import 'package:chase_your_goals/widgets/simple_linear_graph/axis_painter.dart';
+import 'package:chase_your_goals/widgets/simple_linear_graph/linear_graph_painter.dart';
 import 'package:flutter/material.dart' hide TextStyle;
 import 'dart:math' as Math;
 
@@ -12,6 +12,8 @@ import 'dart:math' as Math;
 class SimpleLinearGraph extends StatefulWidget {
   const SimpleLinearGraph({
     Key? key,
+    required this.width,
+    required this.height,
     required this.graphPoints,
     this.graphColors,
     this.maxX,
@@ -22,6 +24,8 @@ class SimpleLinearGraph extends StatefulWidget {
     this.minY,
   }) : super(key: key);
 
+  final double height;
+  final double width;
   final List<List<Offset>> graphPoints;
   final List<Color>? graphColors;
   final double? maxY;
@@ -100,13 +104,13 @@ class _SimpleLinearGraphState extends State<SimpleLinearGraph> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 220.0,
-      height: 110.0,
+      width: widget.width,
+      height: widget.height,
       child: Align(
         alignment: Alignment.center,
         child: SizedBox(
-          width: 210.0,
-          height: 100.0,
+          width: widget.width * 0.95,
+          height: widget.height * 0.95,
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
@@ -114,7 +118,7 @@ class _SimpleLinearGraphState extends State<SimpleLinearGraph> {
                 painter: GraphAxisPainter(
                   _minY,
                   _maxY,
-                  axisWidth: 20.0,
+                  axisWidth: widget.width * 0.05,
                   verticalDividers: 10,
                   horizontalDividers: 10,
                 ),
@@ -123,8 +127,8 @@ class _SimpleLinearGraphState extends State<SimpleLinearGraph> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: SizedBox(
-                    width: 190.0,
-                    height: 100.0,
+                    width: widget.width * 0.9,
+                    height: widget.height * 0.95,
                     child: GestureDetector(
                       onPanStart: (DragStartDetails details) =>
                           setState(() => touchOffset = details.localPosition),
