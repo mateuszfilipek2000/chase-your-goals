@@ -93,7 +93,7 @@ def addRoutes(name):
     contents.append(line)
   f.close()
 
-  contents.insert(index, "      case '/"+ name +"': \n        return MaterialPageRoute(builder: (_) => const "+ name.capitalize() +"View());" + '\n')
+  contents.insert(index, "      case '/"+ name +"': \n        return MaterialPageRoute(builder: (_) => const "+ name.capitalize() +"Page());" + '\n')
 
   f = open(routesFileName, "w")
   contents = "".join(contents)

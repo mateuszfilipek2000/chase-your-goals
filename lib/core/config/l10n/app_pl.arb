@@ -1,0 +1,6 @@
+{
+    "hello": "Cześć!",
+    "@hello": {
+        "description": "Powitanie"
+    }
+}

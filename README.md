@@ -16,4 +16,5 @@ Flutter to-do app made to practice custom painters, the use of sqflite and to im
     * Test
     * Flutter_secure_storage
     * Bloc_test
+    * INTL 
     
