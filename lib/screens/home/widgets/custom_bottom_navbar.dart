@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CustomBottomNavbar extends StatefulWidget {
   const CustomBottomNavbar(
       {Key? key,
-      this.height = 60.0,
+      this.height = 50.0,
       required this.onPageChanged,
       required this.buttonTexts})
       : super(key: key);
@@ -44,9 +44,12 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: widget.height,
       width: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -57,6 +60,8 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar>
               painter: NavigationBarIndicatorPainter(
                 widget.buttonTexts.length,
                 selectedTabIndex: animation.value,
+                activeColor: Theme.of(context).primaryColor,
+                inActiveColor: Theme.of(context).disabledColor,
               ),
             ),
           ),
@@ -67,10 +72,16 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar>
                 for (var i = 0; i < widget.buttonTexts.length; i++)
                   Expanded(
                     child: TextButton(
+                      style: TextButton.styleFrom(),
                       child: Center(
                         child: Text(
                           widget.buttonTexts[i],
-                          style: Theme.of(context).textTheme.bodyText2,
+                          style:
+                              Theme.of(context).textTheme.bodyText1?.copyWith(
+                                    color: i == selectedTab.toInt()
+                                        ? Colors.blue
+                                        : Colors.grey,
+                                  ),
                         ),
                       ),
                       onPressed: () {
@@ -98,17 +109,23 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar>
 }
 
 class NavigationBarIndicatorPainter extends CustomPainter {
-  NavigationBarIndicatorPainter(this.amountOfTabs,
-      {required this.selectedTabIndex});
+  NavigationBarIndicatorPainter(
+    this.amountOfTabs, {
+    required this.selectedTabIndex,
+    required this.activeColor,
+    required this.inActiveColor,
+  });
   final int amountOfTabs;
   double selectedTabIndex = 0;
+  final Color activeColor;
+  final Color inActiveColor;
 
   @override
   void paint(Canvas canvas, Size size) {
     final double singleTabSize = size.width / amountOfTabs;
 
     Paint indicatorPaint = Paint()
-      ..color = Colors.black
+      ..color = Colors.blue
       ..strokeWidth = 3.0
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.butt;
@@ -130,7 +147,8 @@ class NavigationBarIndicatorPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(NavigationBarIndicatorPainter oldDelegate) => true;
+  bool shouldRepaint(NavigationBarIndicatorPainter oldDelegate) =>
+      selectedTabIndex != oldDelegate.selectedTabIndex;
 
   @override
   bool shouldRebuildSemantics(NavigationBarIndicatorPainter oldDelegate) =>

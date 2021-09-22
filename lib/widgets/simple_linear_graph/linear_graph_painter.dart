@@ -1,10 +1,11 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:math';
-import 'dart:ui';
+import 'dart:ui' hide TextStyle;
 
-import 'package:flutter/material.dart' hide TextStyle;
+import 'package:flutter/material.dart';
 
+//TODO ADD INITIAL ANIMATION
 class SingleLinearGraphPainter extends CustomPainter {
   SingleLinearGraphPainter(
     this.points,
@@ -14,6 +15,7 @@ class SingleLinearGraphPainter extends CustomPainter {
     required this.minX,
     required this.minY,
     this.touchOffset,
+    this.initialAnimationValue,
   });
   final List<Offset> points;
   final Color? color;
@@ -21,6 +23,7 @@ class SingleLinearGraphPainter extends CustomPainter {
   final double maxX;
   final double minY;
   final double minX;
+  double? initialAnimationValue;
   Offset? touchOffset;
 
   ///translates the percentage
@@ -39,7 +42,7 @@ class SingleLinearGraphPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
       ..color =
-          color != null ? color!.withOpacity(0.6) : Colors.blue.withOpacity(0.6)
+          color != null ? color!.withOpacity(0.5) : Colors.blue.withOpacity(0.5)
       ..strokeWidth = 5.0
       ..style = PaintingStyle.fill;
 
@@ -77,7 +80,6 @@ class SingleLinearGraphPainter extends CustomPainter {
 
     //if touch offset != null then we're looking up for the closest point to the touch position
     if (touchOffset != null) {
-      //print(touchOffset);
       double horizontalHitZone = 0.15 * size.width;
       List<Offset> potentialHitTargets = [];
 
@@ -88,14 +90,12 @@ class SingleLinearGraphPainter extends CustomPainter {
             width: horizontalHitZone,
             height: size.height);
         if (rect.contains(touchOffset!)) {
-          //print(point);
           potentialHitTargets.add(point);
         }
       }
 
       //with all potential targets created we're looking for the closes one to touch
       if (potentialHitTargets.length == 1) {
-        //print("hit ${potentialHitTargets[0]}");
         canvas.drawLine(
           Offset(size.width * _getLocalPosPercents(potentialHitTargets[0]).dx,
               size.height * (_getLocalPosPercents(potentialHitTargets[0]).dy)),
@@ -116,12 +116,6 @@ class SingleLinearGraphPainter extends CustomPainter {
         Offset closestHorizontallyPoint = potentialHitTargets[0];
 
         for (Offset point in potentialHitTargets) {
-          // if ((_getLocalPosition(closestHorizontallyPoint, size).dx -
-          //             touchOffset!.dx)
-          //         .abs() <
-          //     ((_getLocalPosition(point, size).dx - touchOffset!.dx).abs()))
-          //   closestHorizontallyPoint = point;
-
           if (max(_getLocalPosition(closestHorizontallyPoint, size).dx,
                       touchOffset!.dx) -
                   min(_getLocalPosition(closestHorizontallyPoint, size).dx,
@@ -129,14 +123,7 @@ class SingleLinearGraphPainter extends CustomPainter {
               max(_getLocalPosition(point, size).dx, touchOffset!.dx) -
                   min(_getLocalPosition(point, size).dx, touchOffset!.dx))
             closestHorizontallyPoint = point;
-
-          // if ((_getLocalPosition(closestHorizontallyPoint, size).dx -
-          //             touchOffset!.dx)
-          //         .abs() <
-          //     ((_getLocalPosition(point, size).dx - touchOffset!.dx).abs()))
-          //   closestHorizontallyPoint = point;
         }
-        //print("hit $closestHorizontallyPoint");
         canvas.drawLine(
           Offset(
               size.width * _getLocalPosPercents(closestHorizontallyPoint).dx,
@@ -163,29 +150,23 @@ class SingleLinearGraphPainter extends CustomPainter {
     }
   }
 
-  Paragraph _getParagraph(Offset point, double width) {
-    final ParagraphStyle paragraphStyle =
-        ParagraphStyle(textAlign: TextAlign.center);
-    final TextStyle textStyle = TextStyle(color: Colors.white);
-    final ParagraphBuilder paragraphBuilder = ParagraphBuilder(paragraphStyle)
-      ..pushStyle(textStyle)
-      ..addText("${point.dx}, ${point.dy}");
-    return paragraphBuilder.build()..layout(ParagraphConstraints(width: width));
+  TextPainter _getIndicatorText(Offset point) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: point.dy.toInt().toString(),
+        style: const TextStyle(color: Colors.white, fontSize: 15),
+      ),
+      textAlign: TextAlign.start,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    return textPainter;
   }
 
   void _drawParagraph(Offset point, Size size, Canvas canvas, Paint paint) {
     Offset pointLocalPos = _getLocalPosition(point, size);
-    Paragraph paragraph = _getParagraph(point, 100.0);
+    TextPainter textPainter = _getIndicatorText(point);
     late Rect textBackground;
-    // Rect.fromPoints(
-    //   pointLocalPos.translate(5.0, -10),
-    //   Offset(
-    //     paragraph.width + pointLocalPos.translate(5.0, -10).dx,
-    //     pointLocalPos.translate(5.0, -10).dy + (paragraph.height * 1.5),
-    //   ),
-    // ).shift(
-    //   Offset(0, -paragraph.height),
-    // );
 
     late RRect textBg;
 
@@ -193,11 +174,11 @@ class SingleLinearGraphPainter extends CustomPainter {
       textBackground = Rect.fromPoints(
         pointLocalPos.translate(-5.0, -10),
         Offset(
-          pointLocalPos.translate(-5.0, -10).dx - paragraph.width,
-          pointLocalPos.translate(-5.0, -10).dy + (paragraph.height * 1.5),
+          pointLocalPos.translate(-5.0, -10).dx - (textPainter.width * 2.0),
+          pointLocalPos.translate(-5.0, -10).dy + (textPainter.height * 1.5),
         ),
       ).shift(
-        Offset(0, -paragraph.height),
+        Offset(0, -textPainter.height),
       );
       textBg = RRect.fromRectAndCorners(
         textBackground,
@@ -210,11 +191,11 @@ class SingleLinearGraphPainter extends CustomPainter {
       textBackground = Rect.fromPoints(
         pointLocalPos.translate(5.0, -10),
         Offset(
-          paragraph.width + pointLocalPos.translate(5.0, -10).dx,
-          pointLocalPos.translate(5.0, -10).dy + (paragraph.height * 1.5),
+          (textPainter.width * 2.0) + pointLocalPos.translate(5.0, -10).dx,
+          pointLocalPos.translate(5.0, -10).dy + (textPainter.height * 1.5),
         ),
       ).shift(
-        Offset(0, -paragraph.height),
+        Offset(0, -textPainter.height),
       );
       textBg = RRect.fromRectAndCorners(
         textBackground,
@@ -224,21 +205,21 @@ class SingleLinearGraphPainter extends CustomPainter {
       );
     }
 
-    // canvas.drawRRect(
-    //   RRect.fromRectAndRadius(textBackground, const Radius.circular(10.0)),
-    //   paint,
-    // );
     canvas.drawRRect(textBg, paint);
-    canvas.drawParagraph(
-      paragraph,
-      textBackground.topLeft
-          .translate(0.0, (textBackground.height - paragraph.height) / 2.0),
+
+    textPainter.paint(
+      canvas,
+      textBackground.center
+          .translate(-(textPainter.width / 2.0), (-textPainter.height) / 2.0),
     );
   }
 
   @override
   bool shouldRepaint(SingleLinearGraphPainter oldDelegate) =>
-      touchOffset != null || touchOffset != oldDelegate.touchOffset;
+      touchOffset != null ||
+      touchOffset != oldDelegate.touchOffset ||
+      (oldDelegate.initialAnimationValue != initialAnimationValue &&
+          initialAnimationValue != null);
 
   // @override
   // bool shouldRebuildSemantics(SingleLinearGraphPainter oldDelegate) => false;

@@ -10,36 +10,39 @@ import 'dart:math' as Math;
 
 ///if you want to have the area beneth the graph line coloured then pass this colour
 class SimpleLinearGraph extends StatefulWidget {
-  const SimpleLinearGraph({
-    Key? key,
-    required this.width,
-    required this.height,
-    required this.graphPoints,
-    this.graphColors,
-    this.maxX,
-    this.maxY,
-    this.labelX,
-    this.labelY,
-    this.minX,
-    this.minY,
-  }) : super(key: key);
+  const SimpleLinearGraph(
+      {Key? key,
+      // required this.width,
+      // required this.height,
+      required this.graphPoints,
+      this.graphColors,
+      // this.maxX,
+      this.maxY,
+      this.labelX,
+      this.labelY,
+      // this.minX,
+      this.minY,
+      this.padding = 30.0})
+      : super(key: key);
 
-  final double height;
-  final double width;
-  final List<List<Offset>> graphPoints;
+  // final double height;
+  // final double width;
+  final List<Offset> graphPoints;
   final List<Color>? graphColors;
   final double? maxY;
-  final double? maxX;
+  final double? maxX = null;
   final double? minY;
-  final double? minX;
+  final double? minX = null;
   final String? labelX;
   final String? labelY;
+  final double padding;
 
   @override
   State<SimpleLinearGraph> createState() => _SimpleLinearGraphState();
 }
 
-class _SimpleLinearGraphState extends State<SimpleLinearGraph> {
+class _SimpleLinearGraphState extends State<SimpleLinearGraph>
+    with SingleTickerProviderStateMixin {
   double _maxY = 0.0;
   double _maxX = 0.0;
   late double _minY;
@@ -48,69 +51,78 @@ class _SimpleLinearGraphState extends State<SimpleLinearGraph> {
   // ignore: avoid_init_to_null
   Offset? touchOffset = null;
 
+  late AnimationController animationController;
+  late Animation<double> animation;
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
-    _minY = widget.graphPoints[0][0].dy;
-    _minX = widget.graphPoints[0][0].dx;
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    )..addListener(() => setState(() {}));
+    animation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.easeIn),
+    );
+
+    _minY = widget.graphPoints[0].dy;
+    _minX = widget.graphPoints[0].dx;
 
     //sorting each offset list by the value of x in each offset
-    for (List<Offset> offsets in widget.graphPoints) {
-      offsets.sort((a, b) => a.dx.compareTo(b.dx));
-    }
+    // for (List<Offset> offsets in widget.graphPoints) {
+    //   offsets.sort((a, b) => a.dx.compareTo(b.dx));
+    // }
+    widget.graphPoints.sort((a, b) => a.dx.compareTo(b.dx));
 
     //if maxX value is null then every available offset is checked to find max value
     if (widget.maxX == null) {
-      for (List<Offset> points in widget.graphPoints) {
-        for (Offset point in points) {
-          _maxX = Math.max(_maxX, point.dx);
-        }
+      for (Offset point in widget.graphPoints) {
+        _maxX = Math.max(_maxX, point.dx);
       }
     } else
       _maxX = widget.maxX!;
 
     //if minY value is null then every available offset is checked to find lowest value
     if (widget.minY == null) {
-      for (List<Offset> points in widget.graphPoints) {
-        for (Offset point in points) {
-          _minY = Math.min(_minY, point.dy);
-        }
+      for (Offset point in widget.graphPoints) {
+        _minY = Math.min(_minY, point.dy);
       }
     } else
       _minY = widget.minY!;
 
     //if minX value is null then every available offset is checked to find lowest value
     if (widget.minX == null) {
-      for (List<Offset> points in widget.graphPoints) {
-        for (Offset point in points) {
-          _minX = Math.min(_minX, point.dx);
-        }
+      for (Offset point in widget.graphPoints) {
+        _minX = Math.min(_minX, point.dx);
       }
     } else
       _minX = widget.minX!;
 
     //if maxY value is null then every available offset is checked to find max value
     if (widget.maxY == null) {
-      for (List<Offset> points in widget.graphPoints) {
-        for (Offset point in points) {
-          _maxY = Math.max(_maxY, point.dy);
-        }
+      for (Offset point in widget.graphPoints) {
+        _maxY = Math.max(_maxY, point.dy);
       }
     } else
       _maxY = widget.maxY!;
 
     super.initState();
+
+    animationController.forward();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width,
-      height: widget.height,
-      child: Align(
-        alignment: Alignment.center,
+    return LayoutBuilder(
+      builder: (context, constraints) => Center(
         child: SizedBox(
-          width: widget.width * 0.95,
-          height: widget.height * 0.95,
+          width: constraints.maxWidth - widget.padding,
+          height: constraints.maxHeight - widget.padding,
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
@@ -118,41 +130,44 @@ class _SimpleLinearGraphState extends State<SimpleLinearGraph> {
                 painter: GraphAxisPainter(
                   _minY,
                   _maxY,
-                  axisWidth: widget.width * 0.05,
+                  //axisWidth: widget.width * 0.05,
                   verticalDividers: 10,
                   horizontalDividers: 10,
+                  pointLabels: [
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat',
+                    'Sun'
+                  ],
                 ),
               ),
-              for (int i = 0; i < widget.graphPoints.length; i++)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: SizedBox(
-                    width: widget.width * 0.9,
-                    height: widget.height * 0.95,
-                    child: GestureDetector(
-                      onPanStart: (DragStartDetails details) =>
-                          setState(() => touchOffset = details.localPosition),
-                      onPanUpdate: (DragUpdateDetails details) =>
-                          setState(() => touchOffset = details.localPosition),
-                      onPanEnd: (_) => setState(() => touchOffset = null),
-                      child: CustomPaint(
-                        painter: SingleLinearGraphPainter(
-                          widget.graphPoints[i],
-                          null,
-                          // maxX: _maxX + (0.1 * _minX),
-                          // maxY: _maxY + (0.1 * _maxY),
-                          // minX: _minX - (0.1 * _minX),
-                          // minY: _minY - (0.1 * _maxY),
-                          maxX: _maxX,
-                          maxY: _maxY,
-                          minX: _minX,
-                          minY: _minY,
-                          touchOffset: touchOffset,
-                        ),
-                      ),
-                    ),
+              GestureDetector(
+                onPanStart: (DragStartDetails details) =>
+                    setState(() => touchOffset = details.localPosition),
+                onPanUpdate: (DragUpdateDetails details) =>
+                    setState(() => touchOffset = details.localPosition),
+                onPanEnd: (_) => setState(() => touchOffset = null),
+                child: CustomPaint(
+                  painter: SingleLinearGraphPainter(
+                    widget.graphPoints,
+                    null,
+                    // maxX: _maxX + (0.1 * _minX),
+                    // maxY: _maxY + (0.1 * _maxY),
+                    // minX: _minX - (0.1 * _minX),
+                    // minY: _minY - (0.1 * _maxY),
+                    maxX: _maxX,
+                    maxY: _maxY,
+                    minX: _minX,
+                    minY: _minY,
+                    initialAnimationValue: animation.value,
+
+                    touchOffset: touchOffset,
                   ),
                 ),
+              ),
             ],
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:chase_your_goals/core/config/routes/app_routes.dart';
+import 'package:chase_your_goals/core/config/themes/app_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -23,10 +24,11 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      theme: AppThemes.light,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue,
+      // ),
       initialRoute: "/home",
       onGenerateRoute: AppRoutes.onGeneratedRoute,
     );

@@ -6,9 +6,10 @@ class GraphAxisPainter extends CustomPainter {
   const GraphAxisPainter(
     this.verticalAxisMin,
     this.verticalAxisMax, {
-    required this.axisWidth,
+    //required this.axisWidth,
     required this.horizontalDividers,
     required this.verticalDividers,
+    required this.pointLabels,
   });
 
   final double verticalAxisMin;
@@ -16,8 +17,9 @@ class GraphAxisPainter extends CustomPainter {
 
   final int verticalDividers;
   final int horizontalDividers;
+  final List<String> pointLabels;
 
-  final double axisWidth;
+  //final double axisWidth;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -45,28 +47,14 @@ class GraphAxisPainter extends CustomPainter {
     //     rectPaint);
 
     for (var i = verticalDividers; i >= 0; i--) {
+      //drawing background lines
       canvas.drawLine(
-          Offset(axisWidth, reducedHeight / verticalDividers * i),
+          Offset(0, reducedHeight / verticalDividers * i),
           Offset(size.width, reducedHeight / verticalDividers * i),
           verticalLinesPaint);
-    }
 
-    for (var i = verticalDividers; i >= 0; i--) {
-      if (i == 0 || i == verticalDividers || i == verticalDividers / 2) {
-        // canvas.drawLine(Offset(0, reducedHeight / verticalDividers * i),
-        //     Offset(axisWidth, reducedHeight / verticalDividers * i), axisPaint);
-
-        // Paragraph _p = _getParagraph(
-        //   ((verticalAxisMax) / verticalDividers * (verticalDividers - i).abs())
-        //       .toInt()
-        //       .toString(),
-        // );
-
-        // canvas.drawParagraph(
-        //   _p,
-        //   Offset(0, (reducedHeight / verticalDividers * i) - (_p.height / 2.0)),
-        // );
-        //final TextStyle textStyle = TextStyle(color: Colors.black, fontSize: 10);
+      //drawing vertical labels
+      if (i == 0 || i == verticalDividers / 2) {
         final TextPainter textPainter = TextPainter(
           text: TextSpan(
             text: ((verticalAxisMax) /
@@ -74,7 +62,7 @@ class GraphAxisPainter extends CustomPainter {
                     (verticalDividers - i).abs())
                 .toInt()
                 .toString(),
-            style: const TextStyle(color: Colors.black, fontSize: 10),
+            style: const TextStyle(color: Colors.black, fontSize: 13),
           ),
           textAlign: TextAlign.start,
           textDirection: TextDirection.ltr,
@@ -83,17 +71,62 @@ class GraphAxisPainter extends CustomPainter {
         textPainter.paint(
           canvas,
           Offset(
-              (axisWidth - textPainter.width),
-              (reducedHeight / verticalDividers * i) -
-                  (textPainter.height / 2.0)),
+            (-textPainter.width - 15.0),
+            (reducedHeight / verticalDividers * i) - (textPainter.height / 2.0),
+          ),
         );
-      } else {
-        // canvas.drawLine(
-        //     Offset(0, reducedHeight / verticalDividers * i),
-        //     Offset(axisWidth / 2.0, reducedHeight / verticalDividers * i),
-        //     axisPaint);
       }
     }
+
+    for (int i = 0; i < pointLabels.length; i++) {
+      final TextPainter textPainter = TextPainter(
+        text: TextSpan(
+          text: pointLabels[i],
+          style: const TextStyle(color: Colors.black, fontSize: 13),
+        ),
+        textAlign: TextAlign.start,
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        Offset(
+          ((size.width / (pointLabels.length - 1) * i) -
+              (textPainter.width / 2.0)),
+          (size.height + 5.0),
+        ),
+      );
+    }
+
+    // for (var i = verticalDividers; i >= 0; i--) {
+    //   if (i == 0 || i == verticalDividers || i == verticalDividers / 2) {
+    //     final TextPainter textPainter = TextPainter(
+    //       text: TextSpan(
+    //         text: ((verticalAxisMax) /
+    //                 verticalDividers *
+    //                 (verticalDividers - i).abs())
+    //             .toInt()
+    //             .toString(),
+    //         style: const TextStyle(color: Colors.black, fontSize: 10),
+    //       ),
+    //       textAlign: TextAlign.start,
+    //       textDirection: TextDirection.ltr,
+    //     );
+    //     textPainter.layout();
+    //     textPainter.paint(
+    //       canvas,
+    //       Offset(
+    //           (textPainter.width),
+    //           (reducedHeight / verticalDividers * i) -
+    //               (textPainter.height / 2.0)),
+    //     );
+    //   } else {
+    //     // canvas.drawLine(
+    //     //     Offset(0, reducedHeight / verticalDividers * i),
+    //     //     Offset(axisWidth / 2.0, reducedHeight / verticalDividers * i),
+    //     //     axisPaint);
+    //   }
+    // }
   }
 
   // Paragraph _getParagraph(String value) {
