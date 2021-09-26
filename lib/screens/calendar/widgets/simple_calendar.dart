@@ -52,7 +52,10 @@ class _SimpleCalendarState extends State<SimpleCalendar>
 
   @override
   void dispose() {
-    if (overlayEntry != null) overlayEntry!.remove();
+    if (overlayEntry != null) {
+      overlayEntry?.remove();
+      overlayEntry = null;
+    }
     overlayController.dispose();
     print("disposing");
     super.dispose();
@@ -74,7 +77,7 @@ class _SimpleCalendarState extends State<SimpleCalendar>
                 .day);
         i <= getMonthLength(selectedMonth.previousMonth);
         i++) {
-      days.add(CalendarDay(i, isActive: false));
+      days.add(CalendarDay(i, isActive: false, events: []));
     }
 
     for (var i = 1; i <= getMonthLength(selectedMonth); i++) {
@@ -82,13 +85,13 @@ class _SimpleCalendarState extends State<SimpleCalendar>
         CalendarDay(
           i,
           isActive: true,
-          numberOfEvents: math.Random().nextInt(5),
+          events: dummyEvents[math.Random().nextInt(dummyEvents.length)],
         ),
       );
     }
 
     for (var i = 1; days.length <= 42; i++) {
-      days.add(CalendarDay(i, isActive: false));
+      days.add(CalendarDay(i, isActive: false, events: []));
     }
   }
 
@@ -110,11 +113,10 @@ class _SimpleCalendarState extends State<SimpleCalendar>
 
   void showOverlay(int index) async {
     if (overlayEntry != null) {
-      if (overlayEntry!.mounted) {
-        TickerFuture reverse = overlayController.reverse();
-        await reverse;
-        overlayEntry!.remove();
-      }
+      TickerFuture reverse = overlayController.reverse();
+      await reverse;
+      if (overlayEntry != null) overlayEntry?.remove();
+      overlayEntry = null;
     }
 
     double overlayWidth = 150.0;
@@ -147,15 +149,46 @@ class _SimpleCalendarState extends State<SimpleCalendar>
           left: ((index % 7) * buttonWidth <= size.width / 2.0)
               ? buttonOffset.dx + buttonWidth
               : buttonOffset.dx - overlayWidth,
-          top: buttonOffset.dy - overlayHeight,
+          top: (buttonWidth * (index / 7).ceil()) >= size.height / 2.0
+              ? buttonOffset.dy - overlayHeight
+              : buttonOffset.dy,
           child: FadeTransition(
             opacity: overlayOpacityAnimation,
             child: SizedBox(
               height: overlayHeight,
               width: overlayWidth,
-              child: const DecoratedBox(
+              child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: Theme.of(context).colorScheme.surface,
+                  //border: Border.all(width: 1.0, color: Colors.black),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).shadowColor.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ListView(
+                    children: days[index]
+                        .events
+                        .map(
+                          (event) => Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              event,
+                              style: Theme.of(context).textTheme.caption,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 4,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ),
               ),
             ),
@@ -271,7 +304,11 @@ class _SimpleCalendarState extends State<SimpleCalendar>
                                 Material(
                                   color: Theme.of(context).colorScheme.surface,
                                   child: InkWell(
-                                    onTap: () => showOverlay(index),
+                                    onTap: () {
+                                      if (day.numberOfEvents != 0) {
+                                        showOverlay(index);
+                                      }
+                                    },
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
@@ -325,12 +362,14 @@ class CalendarDay {
   const CalendarDay(
     this.dayNumber, {
     required this.isActive,
-    this.numberOfEvents = 0,
+    required this.events,
   });
 
   final int dayNumber;
   final bool isActive;
-  final int numberOfEvents;
+  // final int numberOfEvents;
+  final List<String> events;
+  int get numberOfEvents => events.length;
 }
 
 //TODO INTERNATIONALIZATION
@@ -348,3 +387,21 @@ Map<int, String> englishMonths = {
   11: "November",
   12: "December",
 };
+
+List<String> _dummyEvents = [
+  "Find blue flower with red thorns",
+  "This would be so much easier if I wasn't colorblind",
+  "Are we there yet?",
+  "Well it’s no wonder you don’t have any friends.",
+  "Because that’s what friends do, they FORGIVE EACH OTHER.",
+  "This’ll be fun. We’ll stay up late, swapping manly stories, and in the morning… I’m making waffles.",
+];
+
+List<List<String>> dummyEvents = [
+  [],
+  _dummyEvents,
+  [],
+  _dummyEvents.getRange(0, 2).toList(),
+  _dummyEvents.getRange(1, 4).toList(),
+  _dummyEvents.getRange(2, 3).toList(),
+];
