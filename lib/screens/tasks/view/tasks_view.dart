@@ -39,14 +39,9 @@ class TasksView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextField(
-                        // onChanged: (String val) =>
-                        //     _.handleControllerTextChange(val),
-                        //autofocus: true,
                         autocorrect: true,
-                        // controller: _.searchFieldController,
                         decoration: InputDecoration(
                           icon: const Icon(Icons.search_outlined),
-                          //focusColor: Theme.of(context).colorScheme.onSurface,
                           hintText: "Search",
                           hintStyle: TextStyle(
                             color: Theme.of(context).disabledColor,

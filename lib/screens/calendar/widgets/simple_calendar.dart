@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:chase_your_goals/data/extensions/date_helpers.dart';
+import 'dart:math' as math;
 
 class SimpleCalendar extends StatefulWidget {
   const SimpleCalendar({
@@ -16,7 +17,8 @@ class SimpleCalendar extends StatefulWidget {
   _SimpleCalendarState createState() => _SimpleCalendarState();
 }
 
-class _SimpleCalendarState extends State<SimpleCalendar> {
+class _SimpleCalendarState extends State<SimpleCalendar>
+    with SingleTickerProviderStateMixin {
   late DateTime selectedMonth;
 
   List<int> currentMonthIndexes = [];
@@ -24,11 +26,36 @@ class _SimpleCalendarState extends State<SimpleCalendar> {
 
   List<CalendarDay> days = [];
 
+  final GlobalKey _calendarKey = GlobalKey();
+
+  OverlayEntry? overlayEntry;
+  int? overlayButtonIndex;
+
+  late AnimationController overlayController;
+  late Animation<double> overlayOpacityAnimation;
+
   @override
   void initState() {
+    overlayController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+
+    overlayOpacityAnimation = Tween<double>(begin: 0, end: 1.0).animate(
+      CurvedAnimation(parent: overlayController, curve: Curves.easeIn),
+    );
+
     selectedMonth = DateTime.now();
     prepareCalendar();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (overlayEntry != null) overlayEntry!.remove();
+    overlayController.dispose();
+    print("disposing");
+    super.dispose();
   }
 
   void prepareCalendar() {
@@ -51,7 +78,13 @@ class _SimpleCalendarState extends State<SimpleCalendar> {
     }
 
     for (var i = 1; i <= getMonthLength(selectedMonth); i++) {
-      days.add(CalendarDay(i, isActive: true));
+      days.add(
+        CalendarDay(
+          i,
+          isActive: true,
+          numberOfEvents: math.Random().nextInt(5),
+        ),
+      );
     }
 
     for (var i = 1; days.length <= 42; i++) {
@@ -59,18 +92,7 @@ class _SimpleCalendarState extends State<SimpleCalendar> {
     }
   }
 
-  int getMonthLength(DateTime now) {
-    int monthLength = 0;
-
-    // DateTime currentMonth = DateTime(now.year, now.month, 1);
-
-    // while (currentMonth.month == now.month) {
-    //   monthLength++;
-    //   currentMonth = currentMonth.add(const Duration(days: 1));
-    // }
-    monthLength = DateTime(now.year, now.month + 1, 0).day;
-    return monthLength;
-  }
+  int getMonthLength(DateTime now) => DateTime(now.year, now.month + 1, 0).day;
 
   int max(a, b) => a > b ? a : b;
 
@@ -86,9 +108,70 @@ class _SimpleCalendarState extends State<SimpleCalendar> {
     setState(() {});
   }
 
+  void showOverlay(int index) async {
+    if (overlayEntry != null) {
+      if (overlayEntry!.mounted) {
+        TickerFuture reverse = overlayController.reverse();
+        await reverse;
+        overlayEntry!.remove();
+      }
+    }
+
+    double overlayWidth = 150.0;
+    double overlayHeight = 200.0;
+
+    final RenderBox renderBox =
+        _calendarKey.currentContext?.findRenderObject() as RenderBox;
+
+    final Size size = renderBox.size;
+
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+
+    final Offset bottomLeftCorner = Offset(offset.dx, offset.dy + size.height);
+    final double buttonWidth = widget.width / 7.0;
+    final double calendarAreaHeight = buttonWidth * 6.0;
+
+    if (overlayButtonIndex == null || overlayButtonIndex != index) {
+      overlayController.forward();
+      overlayButtonIndex = index;
+      //calendar has 42 buttons, 6 rows, each row contains 7 buttons
+      //getting offset (left top corner) of pressed button
+      final Offset buttonOffset = Offset(
+        (index % 7) * buttonWidth,
+        (buttonWidth * (index / 7).floor()),
+      ).translate(
+          bottomLeftCorner.dx, bottomLeftCorner.dy - calendarAreaHeight);
+
+      overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          left: ((index % 7) * buttonWidth <= size.width / 2.0)
+              ? buttonOffset.dx + buttonWidth
+              : buttonOffset.dx - overlayWidth,
+          top: buttonOffset.dy - overlayHeight,
+          child: FadeTransition(
+            opacity: overlayOpacityAnimation,
+            child: SizedBox(
+              height: overlayHeight,
+              width: overlayWidth,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      Overlay.of(context)?.insert(overlayEntry!);
+    } else {
+      overlayButtonIndex = null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      key: _calendarKey,
       //height: widget.height,
       height: (widget.width / 1.17) + 50.0 + 10.0,
       width: widget.width,
@@ -127,7 +210,8 @@ class _SimpleCalendarState extends State<SimpleCalendar> {
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 600),
                         child: Text(
-                          englishMonths[selectedMonth.month]!,
+                          englishMonths[selectedMonth.month]! +
+                              " ${selectedMonth.year}",
                           style: Theme.of(context).textTheme.headline6,
                           key: UniqueKey(),
                         ),
@@ -161,36 +245,71 @@ class _SimpleCalendarState extends State<SimpleCalendar> {
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     crossAxisCount: 7,
-                    children: days.map(
-                      (day) {
-                        if (!day.isActive) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).disabledColor,
-                            ),
-                            child: Center(
-                              child: Text(
-                                day.dayNumber.toString(),
-                                style: Theme.of(context).textTheme.bodyText1,
-                              ),
-                            ),
-                          );
-                        } else {
-                          return Material(
-                            color: Theme.of(context).colorScheme.surface,
-                            child: InkWell(
-                              onTap: () {},
-                              child: Center(
-                                child: Text(
-                                  day.dayNumber.toString(),
-                                  style: Theme.of(context).textTheme.bodyText1,
+                    children: days
+                        .asMap()
+                        .map(
+                          (int index, CalendarDay day) {
+                            if (!day.isActive) {
+                              return MapEntry<int, Widget>(
+                                index,
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).disabledColor,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      day.dayNumber.toString(),
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                    ).toList(),
+                              );
+                            } else {
+                              return MapEntry<int, Widget>(
+                                index,
+                                Material(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  child: InkWell(
+                                    onTap: () => showOverlay(index),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        if (day.numberOfEvents != 0)
+                                          ClipOval(
+                                            child: Container(
+                                              height: widget.width / 10,
+                                              width: widget.width / 10,
+                                              color: day.numberOfEvents == 1
+                                                  ? Colors.lightBlue
+                                                  : day.numberOfEvents <= 3
+                                                      ? Colors.blue[600]
+                                                      : Colors.red,
+                                            ),
+                                          ),
+                                        Text(
+                                          day.dayNumber.toString(),
+                                          style: day.numberOfEvents == 0
+                                              ? Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1
+                                              : Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1
+                                                  ?.copyWith(
+                                                    color: Colors.white,
+                                                  ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        )
+                        .values
+                        .toList(),
                   ),
                 ),
               ),

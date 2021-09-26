@@ -6,6 +6,7 @@ import 'package:chase_your_goals/screens/about/view/about_view.dart';
 import 'package:chase_your_goals/screens/calendar/view/calendar_view.dart';
 import 'package:chase_your_goals/screens/home/widgets/custom_bottom_navbar.dart';
 import 'package:chase_your_goals/screens/tasks/view/tasks_view.dart';
+import 'package:chase_your_goals/widgets/custom_progress_indicator.dart';
 import 'package:chase_your_goals/widgets/section.dart';
 import 'package:chase_your_goals/widgets/simple_linear_graph/simple_linear_graph.dart';
 import 'package:flutter/material.dart';
@@ -135,10 +136,9 @@ class HomeView extends StatelessWidget {
           ),
           const TasksPage(),
           const CalendarPage(),
-          for (int i = 0; i < 1; i++)
-            Center(
-              child: Text(i.toString()),
-            ),
+          const Center(
+            child: CustomProgressIndicator(),
+          ),
           const AboutPage(),
         ],
       ),
