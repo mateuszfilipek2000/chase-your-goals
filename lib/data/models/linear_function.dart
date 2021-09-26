@@ -1,7 +1,7 @@
 import 'package:flutter/rendering.dart';
 
 class LinearFunction {
-  LinearFunction(this.a, this.b);
+  const LinearFunction(this.a, this.b);
   final double a;
   final double b;
 
@@ -15,7 +15,7 @@ class LinearFunction {
     } catch (e) {
       // print("Dividing by zero");
       // print(e == "Dividing by double zero");
-      return LinearFunction(0, 0);
+      return const LinearFunction(0, 0);
     }
     return LinearFunction(_a, _b);
   }

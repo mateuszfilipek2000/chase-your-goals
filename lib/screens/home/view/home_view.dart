@@ -2,6 +2,8 @@ import 'package:chase_your_goals/core/constants/constants.dart';
 import 'package:chase_your_goals/data/extensions/date_helpers.dart';
 import 'package:chase_your_goals/data/models/task.dart';
 import 'package:chase_your_goals/data/models/task_status.dart';
+import 'package:chase_your_goals/screens/about/view/about_view.dart';
+import 'package:chase_your_goals/screens/calendar/view/calendar_view.dart';
 import 'package:chase_your_goals/screens/home/widgets/custom_bottom_navbar.dart';
 import 'package:chase_your_goals/screens/tasks/view/tasks_view.dart';
 import 'package:chase_your_goals/widgets/section.dart';
@@ -37,7 +39,7 @@ class HomeView extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           curve: Curves.bounceInOut,
         ),
-        buttonTexts: const ["Home", "Tasks", "Lists", "Me", "About"],
+        buttonTexts: const ["Home", "Tasks", "Calendar", "Me", "About"],
       ),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
@@ -72,62 +74,72 @@ class HomeView extends StatelessWidget {
               Expanded(
                 child: Section(
                   sectionTitle: "Upcoming activities",
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    //TODO ADD TASKS
-                    itemCount: dummyTasks.length,
-                    itemBuilder: (context, index) {
-                      return Material(
-                        elevation: 10.0,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: ListTile(
-                            tileColor: Theme.of(context).cardColor,
-                            onTap: () => print(index),
-                            title: Text(
-                              dummyTasks[index].title,
-                              style: Theme.of(context).textTheme.bodyText1,
+                  child: MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      //TODO ADD TASKS
+                      itemCount: dummyTasks.length,
+                      itemBuilder: (context, index) {
+                        return Material(
+                          elevation: 10.0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: ListTile(
+                              tileColor: Theme.of(context).cardColor,
+                              onTap: () => print(index),
+                              title: Text(
+                                dummyTasks[index].title,
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                              isThreeLine:
+                                  dummyTasks[index].description != null,
+                              subtitle: dummyTasks[index].description == null
+                                  ? null
+                                  : Text(
+                                      dummyTasks[index].description!,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                              trailing: dummyTasks[index].dateDue == null
+                                  ? null
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.alarm,
+                                        ),
+                                        Text(
+                                          dummyTasks[index]
+                                              .dateDue!
+                                              .getDashedDate(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .caption,
+                                        ),
+                                      ],
+                                    ),
                             ),
-                            isThreeLine: dummyTasks[index].description != null,
-                            subtitle: dummyTasks[index].description == null
-                                ? null
-                                : Text(
-                                    dummyTasks[index].description!,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                            trailing: dummyTasks[index].dateDue == null
-                                ? null
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.alarm,
-                                      ),
-                                      Text(
-                                        dummyTasks[index]
-                                            .dateDue!
-                                            .getDashedDate(),
-                                        style:
-                                            Theme.of(context).textTheme.caption,
-                                      ),
-                                    ],
-                                  ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
             ],
           ),
           const TasksPage(),
-          for (int i = 0; i < 2; i++)
+          const CalendarPage(),
+          for (int i = 0; i < 1; i++)
             Center(
               child: Text(i.toString()),
-            )
+            ),
+          const AboutPage(),
         ],
       ),
     );
@@ -151,6 +163,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
     Status.inProgress,
+    [],
   ),
   Task(
     "Watch some tv",
@@ -158,6 +171,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-01"),
     null,
     Status.inProgress,
+    [],
   ),
   Task(
     "Write a letter to Mon",
@@ -165,6 +179,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
     Status.inProgress,
+    [],
   ),
   Task(
     "Learn integrals",
@@ -172,5 +187,6 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
     Status.inProgress,
+    [],
   ),
 ];

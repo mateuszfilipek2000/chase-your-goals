@@ -24,55 +24,129 @@ class TasksView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 8.0,
-        crossAxisSpacing: 8.0,
-        childAspectRatio: 1.2,
-      ),
-      itemCount: dummyTasks.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () => print(index),
-          child: GridTile(
-            header: GridTileBar(
-              title: Text(
-                dummyTasks[index].title,
-              ),
-              subtitle: dummyTasks[index].description == null
-                  ? null
-                  : Text(
-                      dummyTasks[index].description!,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        // onChanged: (String val) =>
+                        //     _.handleControllerTextChange(val),
+                        //autofocus: true,
+                        autocorrect: true,
+                        // controller: _.searchFieldController,
+                        decoration: InputDecoration(
+                          icon: const Icon(Icons.search_outlined),
+                          //focusColor: Theme.of(context).colorScheme.onSurface,
+                          hintText: "Search",
+                          hintStyle: TextStyle(
+                            color: Theme.of(context).disabledColor,
+                          ),
+                        ),
+                        style: Theme.of(context).textTheme.button,
+                      ),
                     ),
-            ),
-            footer: GridTileBar(
-              title: const Text("Added:"),
-              subtitle: Text(
-                dummyTasks[index].dateAdded.getDashedDate(),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed('/task_adding'),
+                        icon: const Icon(
+                          Icons.add_rounded,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            //TODO ADD COLOUR BASED ON TAG
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(context).shadowColor.withOpacity(0.4),
-                    spreadRadius: 1,
-                    blurRadius: 2,
-                    offset: const Offset(1, 1),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  "Tasks",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  "Events",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      ?.copyWith(color: Theme.of(context).disabledColor),
+                ),
+              ),
+            ],
+          ),
+          const Divider(
+            //color: Theme.of(context).disabledColor,
+            height: 2.0,
+            thickness: 1.5,
+          ),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 8.0,
+                crossAxisSpacing: 8.0,
+                childAspectRatio: 1.2,
+              ),
+              itemCount: dummyTasks.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () => print(index),
+                  child: GridTile(
+                    header: GridTileBar(
+                      title: Text(
+                        dummyTasks[index].title,
+                      ),
+                      subtitle: dummyTasks[index].description == null
+                          ? null
+                          : Text(
+                              dummyTasks[index].description!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                    ),
+                    footer: GridTileBar(
+                      title: const Text("Added:"),
+                      subtitle: Text(
+                        dummyTasks[index].dateAdded.getDashedDate(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    //TODO ADD COLOUR BASED ON TAG
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: dummyTasks[index].color,
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Theme.of(context).shadowColor.withOpacity(0.4),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: const Offset(1, 1),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
@@ -84,6 +158,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
     Status.inProgress,
+    ["Programming", "Learning"],
   ),
   Task(
     "Watch some tv",
@@ -91,6 +166,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-01"),
     null,
     Status.inProgress,
+    ["Free time"],
   ),
   Task(
     "Write a letter to Mon",
@@ -98,6 +174,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
     Status.inProgress,
+    ["Friends", "Social"],
   ),
   Task(
     "Learn integrals",
@@ -105,6 +182,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
     Status.inProgress,
+    ["Math", "Uni"],
   ),
   Task(
     "Make a to-do app!",
@@ -112,6 +190,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
     Status.inProgress,
+    ["Programming", "Learning"],
   ),
   Task(
     "Watch some tv",
@@ -119,6 +198,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-01"),
     null,
     Status.inProgress,
+    ["Free time"],
   ),
   Task(
     "Write a letter to Mon",
@@ -126,6 +206,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
     Status.inProgress,
+    ["Friends", "Social"],
   ),
   Task(
     "Learn integrals",
@@ -133,6 +214,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
     Status.inProgress,
+    ["Math", "Uni"],
   ),
   Task(
     "Make a to-do app!",
@@ -140,6 +222,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
     Status.inProgress,
+    ["Programming", "Learning"],
   ),
   Task(
     "Watch some tv",
@@ -147,6 +230,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-01"),
     null,
     Status.inProgress,
+    ["Free time"],
   ),
   Task(
     "Write a letter to Mon",
@@ -154,6 +238,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
     Status.inProgress,
+    ["Friends", "Social"],
   ),
   Task(
     "Learn integrals",
@@ -161,6 +246,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
     Status.inProgress,
+    ["Math", "Uni"],
   ),
   Task(
     "Make a to-do app!",
@@ -168,6 +254,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
     Status.inProgress,
+    ["Programming", "Learning"],
   ),
   Task(
     "Watch some tv",
@@ -175,6 +262,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-01"),
     null,
     Status.inProgress,
+    ["Free time"],
   ),
   Task(
     "Write a letter to Mon",
@@ -182,6 +270,7 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
     Status.inProgress,
+    ["Friends", "Social"],
   ),
   Task(
     "Learn integrals",
@@ -189,5 +278,6 @@ List<Task> dummyTasks = [
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
     Status.inProgress,
+    ["Math", "Uni"],
   ),
 ];

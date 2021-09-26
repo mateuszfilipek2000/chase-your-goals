@@ -72,12 +72,12 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar>
                 for (var i = 0; i < widget.buttonTexts.length; i++)
                   Expanded(
                     child: TextButton(
-                      style: TextButton.styleFrom(),
+                      //style: TextButton.styleFrom(),
                       child: Center(
                         child: Text(
                           widget.buttonTexts[i],
                           style:
-                              Theme.of(context).textTheme.bodyText1?.copyWith(
+                              Theme.of(context).textTheme.bodyText2?.copyWith(
                                     color: i == selectedTab.toInt()
                                         ? Colors.blue
                                         : Colors.grey,

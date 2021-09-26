@@ -1,3 +1,4 @@
+import 'package:chase_your_goals/widgets/dimensional_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chase_your_goals/screens/about/cubit/about_cubit.dart';
@@ -19,8 +20,11 @@ class AboutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(),
+    return const Center(
+      child: DimensionalCircularProgressIndicator(
+        height: 20.0,
+        width: 50.0,
+      ),
     );
   }
 }
