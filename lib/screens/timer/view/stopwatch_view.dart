@@ -58,9 +58,9 @@ class _StopwatchViewState extends State<StopwatchView>
             setState(() {});
           });
 
-    iconsAnimationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 2))
-          ..addListener(() => setState(() {}));
+    iconsAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 800))
+      ..addListener(() => setState(() {}));
 
     stopwatchAnimationController =
         AnimationController(vsync: this, duration: widget.duration)
@@ -109,7 +109,7 @@ class _StopwatchViewState extends State<StopwatchView>
         parent: initialAnimationController,
         curve: const Interval(
           0.2,
-          0.7,
+          0.5,
           curve: Curves.easeOutBack,
         ),
       ),
@@ -154,7 +154,8 @@ class _StopwatchViewState extends State<StopwatchView>
     );
 
     super.initState();
-
+    // Future.delayed(
+    //     const Duration(milliseconds: 500), iconsAnimationController.forward);
     initialAnimationController.forward();
     iconsAnimationController.forward();
   }
@@ -165,6 +166,16 @@ class _StopwatchViewState extends State<StopwatchView>
     iconsAnimationController.dispose();
     stopwatchAnimationController.dispose();
     super.dispose();
+  }
+
+  void pauseStopwatch() {
+    stopwatchAnimationController.stop();
+    iconsAnimationController.reverse();
+  }
+
+  void resumeStopwatch() {
+    stopwatchAnimationController.forward();
+    iconsAnimationController.forward();
   }
 
   @override
@@ -190,7 +201,10 @@ class _StopwatchViewState extends State<StopwatchView>
                 color: Theme.of(context).primaryColor,
                 clipBehavior: Clip.hardEdge,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    pauseStopwatch();
+                    stopwatchAnimationController.reset();
+                  },
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Icon(
@@ -214,7 +228,15 @@ class _StopwatchViewState extends State<StopwatchView>
                   color: Theme.of(context).primaryColor,
                   clipBehavior: Clip.hardEdge,
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      if (!iconsAnimationController.isAnimating) {
+                        if (iconsAnimationController.isCompleted) {
+                          pauseStopwatch();
+                        } else {
+                          resumeStopwatch();
+                        }
+                      }
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: AnimatedIcon(
