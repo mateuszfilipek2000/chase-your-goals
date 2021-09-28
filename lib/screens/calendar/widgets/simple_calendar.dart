@@ -57,7 +57,6 @@ class _SimpleCalendarState extends State<SimpleCalendar>
       overlayEntry = null;
     }
     overlayController.dispose();
-    print("disposing");
     super.dispose();
   }
 
@@ -112,6 +111,7 @@ class _SimpleCalendarState extends State<SimpleCalendar>
   }
 
   void showOverlay(int index) async {
+    //checking if there's existing overlay, if it exists then it's removed
     if (overlayEntry != null) {
       TickerFuture reverse = overlayController.reverse();
       await reverse;
@@ -177,13 +177,17 @@ class _SimpleCalendarState extends State<SimpleCalendar>
                     children: days[index]
                         .events
                         .map(
-                          (event) => Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              event,
-                              style: Theme.of(context).textTheme.caption,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 4,
+                          (event) => TextButton(
+                            onPressed: () {},
+                            //padding: const EdgeInsets.all(10.0),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                event,
+                                style: Theme.of(context).textTheme.caption,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 5,
+                              ),
                             ),
                           ),
                         )
@@ -197,6 +201,16 @@ class _SimpleCalendarState extends State<SimpleCalendar>
       );
       Overlay.of(context)?.insert(overlayEntry!);
     } else {
+      overlayButtonIndex = null;
+    }
+  }
+
+  void hideOverlay() async {
+    if (overlayEntry != null) {
+      TickerFuture reverse = overlayController.reverse();
+      await reverse;
+      if (overlayEntry != null) overlayEntry?.remove();
+      overlayEntry = null;
       overlayButtonIndex = null;
     }
   }
@@ -233,7 +247,7 @@ class _SimpleCalendarState extends State<SimpleCalendar>
                       icon: const Icon(Icons.arrow_back_ios_rounded),
                       onPressed: () {
                         print("month - 1");
-
+                        hideOverlay();
                         changeMonth(forward: false);
                       },
                     ),
@@ -257,7 +271,7 @@ class _SimpleCalendarState extends State<SimpleCalendar>
                       icon: const Icon(Icons.arrow_forward_ios_rounded),
                       onPressed: () {
                         print("month + 1");
-
+                        hideOverlay();
                         changeMonth(forward: true);
                       },
                     ),
@@ -318,9 +332,9 @@ class _SimpleCalendarState extends State<SimpleCalendar>
                                               height: widget.width / 10,
                                               width: widget.width / 10,
                                               color: day.numberOfEvents == 1
-                                                  ? Colors.lightBlue
+                                                  ? Colors.blue[300]
                                                   : day.numberOfEvents <= 3
-                                                      ? Colors.blue[600]
+                                                      ? Colors.blue[700]
                                                       : Colors.red,
                                             ),
                                           ),

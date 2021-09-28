@@ -6,6 +6,7 @@ import 'package:chase_your_goals/screens/about/view/about_view.dart';
 import 'package:chase_your_goals/screens/calendar/view/calendar_view.dart';
 import 'package:chase_your_goals/screens/home/widgets/custom_bottom_navbar.dart';
 import 'package:chase_your_goals/screens/tasks/view/tasks_view.dart';
+import 'package:chase_your_goals/screens/timer/view/timer_view.dart';
 import 'package:chase_your_goals/widgets/custom_progress_indicator.dart';
 import 'package:chase_your_goals/widgets/section.dart';
 import 'package:chase_your_goals/widgets/simple_linear_graph/simple_linear_graph.dart';
@@ -40,7 +41,7 @@ class HomeView extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           curve: Curves.bounceInOut,
         ),
-        buttonTexts: const ["Home", "Tasks", "Calendar", "Me", "About"],
+        buttonTexts: const ["Home", "Tasks", "Calendar", "Focus", "About"],
       ),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
@@ -136,9 +137,7 @@ class HomeView extends StatelessWidget {
           ),
           const TasksPage(),
           const CalendarPage(),
-          const Center(
-            child: CustomProgressIndicator(),
-          ),
+          const TimerPage(),
           const AboutPage(),
         ],
       ),
