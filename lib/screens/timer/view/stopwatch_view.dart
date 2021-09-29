@@ -229,7 +229,8 @@ class _StopwatchViewState extends State<StopwatchView>
                   clipBehavior: Clip.hardEdge,
                   child: InkWell(
                     onTap: () {
-                      if (!iconsAnimationController.isAnimating) {
+                      if (!iconsAnimationController.isAnimating &&
+                          foregroundIconAlignmentAnimation.isCompleted) {
                         if (iconsAnimationController.isCompleted) {
                           pauseStopwatch();
                         } else {
@@ -304,9 +305,12 @@ class _StopwatchViewState extends State<StopwatchView>
 extension StopwatchHelper on Duration {
   Map<String, int> get stopwatchValues => {
         "hours": (inSeconds / 3600).floor(),
-        "minutes": (((inSeconds) - ((inSeconds / 3600).floor())) / 60).floor(),
+        "minutes":
+            (((inSeconds) - ((inSeconds / 3600).floor()) * 3600) / 60).floor(),
         "seconds": inSeconds -
             ((inSeconds / 3600).floor() * 3600) -
-            ((((inSeconds) - ((inSeconds / 3600).floor())) / 60).floor() * 60),
+            ((((inSeconds) - ((inSeconds / 3600).floor()) * 3600) / 60)
+                    .floor() *
+                60),
       };
 }

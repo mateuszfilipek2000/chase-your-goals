@@ -44,6 +44,7 @@ dependencies:
   hydrated_bloc: ^7.1.0
   moor: ^4.5.0
   intl: ^0.17.0
+  equatable: ^2.0.3
 
 dev_dependencies:
   flutter_test:

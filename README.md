@@ -19,5 +19,5 @@ Flutter to-do app made to practice custom painters, the use of sqflite and to im
     * INTL 
     
 
-# UI Preview | not finished yet, not fully functional
+## UI Preview | not finished yet, not fully functional
 <img src="ui_preview.gif" width="200">
