@@ -40,10 +40,16 @@ class DatabaseRepository {
 
   Future<List<Note>> getNotes({NoteStatus? status, Tag? tag}) async {
     List<Map> notes = await (await db).rawQuery("SELECT * FROM Notes");
+    List<Note> results = [];
+
     for (Map note in notes) {
       print(note);
+      results.add(
+        Note(note["title"], note["description"],
+            DateTime.parse(note["date_added"]), null, NoteStatus.inProgress),
+      );
     }
-    return [];
+    return results;
   }
 
   //adding events or notes
@@ -55,11 +61,10 @@ class DatabaseRepository {
       print(
           "INSERT INTO Events (title, description, date_added, repeat_mode, status, date_due) VALUES ('${object.title}', '${object.description}', '${DateTime.now()}', '${(object as Event).repeatMode == null ? 'NULL' : describeEnum((object).repeatMode!)}', '${describeEnum(NoteStatus.inProgress)}', '${object.dateDue}')");
       res = await (await db).rawInsert(
-        "INSERT INTO Events (title, description, date_added, repeat_mode, status, date_due) VALUES (${object.title}, ${object.description}, ${DateTime.now()}, ${(object as Event).repeatMode == null ? 'NULL' : describeEnum((object).repeatMode!)}, ${describeEnum(NoteStatus.inProgress)}, ${object.dateDue})",
-      );
+          "INSERT INTO Events (title, description, date_added, repeat_mode, status, date_due) VALUES ('${object.title}', '${object.description}', '${DateTime.now()}', '${(object as Event).repeatMode == null ? 'NULL' : describeEnum((object).repeatMode!)}', '${describeEnum(NoteStatus.inProgress)}', '${object.dateDue}')");
     } else {
       res = await (await db).rawInsert(
-        "INSERT INTO Notes (title, description, date_added, status) VALUES (${object.title}, ${object.description ?? 'NULL'}, ${DateTime.now()}, ${describeEnum(NoteStatus.inProgress)})",
+        "INSERT INTO Notes (title, description, date_added, status) VALUES ('${object.title}', '${object.description ?? 'NULL'}', '${DateTime.now()}', '${describeEnum(NoteStatus.inProgress)}')",
       );
       print("adding note");
       print(

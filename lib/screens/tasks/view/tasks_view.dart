@@ -2,7 +2,11 @@ import 'package:chase_your_goals/data/extensions/date_helpers.dart';
 import 'package:chase_your_goals/data/models/task.dart';
 import 'package:chase_your_goals/data/models/task_status.dart';
 import 'package:chase_your_goals/data/repositories/database_repository.dart';
+import 'package:chase_your_goals/screens/tasks/bloc/tasks_viewing_bloc.dart';
+import 'package:chase_your_goals/screens/tasks/bloc/tasks_viewing_events.dart';
+import 'package:chase_your_goals/screens/tasks/bloc/tasks_viewing_state.dart';
 import 'package:chase_your_goals/screens/tasks/widgets/task_card.dart';
+import 'package:chase_your_goals/widgets/dimensional_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chase_your_goals/screens/tasks/cubit/tasks_cubit.dart';
@@ -13,7 +17,8 @@ class TasksPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TasksCubit(),
+      create: (_) => TaskViewingBloc(context.read<DatabaseRepository>())
+        ..add(const TaskViewingRequestNotes()),
       child: const TasksView(),
     );
   }
@@ -88,58 +93,75 @@ class TasksView extends StatelessWidget {
             height: 2.0,
             thickness: 1.5,
           ),
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 8.0,
-                crossAxisSpacing: 8.0,
-                childAspectRatio: 1.2,
-              ),
-              itemCount: dummyTasks.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: DatabaseRepository.instance.getNotes,
-                  child: GridTile(
-                    header: GridTileBar(
-                      title: Text(
-                        dummyTasks[index].title,
-                      ),
-                      subtitle: dummyTasks[index].description == null
-                          ? null
-                          : Text(
-                              dummyTasks[index].description!,
+          BlocBuilder<TaskViewingBloc, TaskViewingState>(
+            builder: (context, state) {
+              if (state is TaskViewingLoading) {
+                return const Center(
+                  child: DimensionalCircularProgressIndicator(),
+                );
+              } else if (state is TaskViewingLoadingSuccess) {
+                return Expanded(
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 8.0,
+                      crossAxisSpacing: 8.0,
+                      childAspectRatio: 1.2,
+                    ),
+                    itemCount: state.tasks.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: DatabaseRepository.instance.getNotes,
+                        child: GridTile(
+                          header: GridTileBar(
+                            title: Text(
+                              state.tasks[index].title,
+                            ),
+                            subtitle: state.tasks[index].description == null
+                                ? null
+                                : Text(
+                                    state.tasks[index].description!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                          ),
+                          footer: GridTileBar(
+                            title: const Text("Added:"),
+                            subtitle: Text(
+                              state.tasks[index].dateAdded.getDashedDate(),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-                    ),
-                    footer: GridTileBar(
-                      title: const Text("Added:"),
-                      subtitle: Text(
-                        dummyTasks[index].dateAdded.getDashedDate(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    //TODO ADD COLOUR BASED ON TAG
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: dummyTasks[index].color,
-                        boxShadow: [
-                          BoxShadow(
-                            color:
-                                Theme.of(context).shadowColor.withOpacity(0.4),
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: const Offset(1, 1),
                           ),
-                        ],
-                      ),
-                    ),
+                          //TODO ADD COLOUR BASED ON TAG
+                          child: Container(
+                            decoration: BoxDecoration(
+                              //color: state.tasks[index].color,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context)
+                                      .shadowColor
+                                      .withOpacity(0.4),
+                                  spreadRadius: 1,
+                                  blurRadius: 2,
+                                  offset: const Offset(1, 1),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
-              },
-            ),
+              } else {
+                return const Center(
+                  child: Text(
+                      "There's been some kind of problem with loading your tasks, sorry :c"),
+                );
+              }
+            },
           ),
         ],
       ),
