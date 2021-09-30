@@ -1,6 +1,7 @@
 import 'package:chase_your_goals/data/extensions/date_helpers.dart';
 import 'package:chase_your_goals/data/models/task.dart';
 import 'package:chase_your_goals/data/models/task_status.dart';
+import 'package:chase_your_goals/data/repositories/database_repository.dart';
 import 'package:chase_your_goals/screens/tasks/widgets/task_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,7 +67,7 @@ class TasksView extends StatelessWidget {
               TextButton(
                 onPressed: () {},
                 child: Text(
-                  "Tasks",
+                  "Notes",
                   style: Theme.of(context).textTheme.headline6,
                 ),
               ),
@@ -98,7 +99,7 @@ class TasksView extends StatelessWidget {
               itemCount: dummyTasks.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
-                  onTap: () => print(index),
+                  onTap: DatabaseRepository.instance.getNotes,
                   child: GridTile(
                     header: GridTileBar(
                       title: Text(
@@ -152,7 +153,7 @@ List<Task> dummyTasks = [
     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Programming", "Learning"],
   ),
   Task(
@@ -160,7 +161,7 @@ List<Task> dummyTasks = [
     null,
     DateTime.parse("2021-10-01"),
     null,
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Free time"],
   ),
   Task(
@@ -168,7 +169,7 @@ List<Task> dummyTasks = [
     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Friends", "Social"],
   ),
   Task(
@@ -176,7 +177,7 @@ List<Task> dummyTasks = [
     "It's time for some math!",
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Math", "Uni"],
   ),
   Task(
@@ -184,7 +185,7 @@ List<Task> dummyTasks = [
     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Programming", "Learning"],
   ),
   Task(
@@ -192,7 +193,7 @@ List<Task> dummyTasks = [
     null,
     DateTime.parse("2021-10-01"),
     null,
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Free time"],
   ),
   Task(
@@ -200,7 +201,7 @@ List<Task> dummyTasks = [
     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Friends", "Social"],
   ),
   Task(
@@ -208,7 +209,7 @@ List<Task> dummyTasks = [
     "It's time for some math!",
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Math", "Uni"],
   ),
   Task(
@@ -216,7 +217,7 @@ List<Task> dummyTasks = [
     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Programming", "Learning"],
   ),
   Task(
@@ -224,7 +225,7 @@ List<Task> dummyTasks = [
     null,
     DateTime.parse("2021-10-01"),
     null,
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Free time"],
   ),
   Task(
@@ -232,7 +233,7 @@ List<Task> dummyTasks = [
     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Friends", "Social"],
   ),
   Task(
@@ -240,7 +241,7 @@ List<Task> dummyTasks = [
     "It's time for some math!",
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Math", "Uni"],
   ),
   Task(
@@ -248,7 +249,7 @@ List<Task> dummyTasks = [
     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Programming", "Learning"],
   ),
   Task(
@@ -256,7 +257,7 @@ List<Task> dummyTasks = [
     null,
     DateTime.parse("2021-10-01"),
     null,
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Free time"],
   ),
   Task(
@@ -264,7 +265,7 @@ List<Task> dummyTasks = [
     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Friends", "Social"],
   ),
   Task(
@@ -272,7 +273,7 @@ List<Task> dummyTasks = [
     "It's time for some math!",
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     ["Math", "Uni"],
   ),
 ];

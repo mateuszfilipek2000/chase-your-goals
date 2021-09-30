@@ -29,6 +29,8 @@ class TimerCubit extends Cubit<TimerState> {
   void decrementMinutes() {
     if (state.minutes - 1 >= 0) {
       emit(TimerState(state.hours, state.minutes - 1, state.seconds));
+    } else {
+      emit(TimerState(state.hours, 59, state.seconds));
     }
   }
 
@@ -43,6 +45,8 @@ class TimerCubit extends Cubit<TimerState> {
   void decrementSeconds() {
     if (state.seconds - 1 >= 0) {
       emit(TimerState(state.hours, state.minutes, state.seconds - 1));
+    } else {
+      emit(TimerState(state.hours, state.minutes, 59));
     }
   }
 }

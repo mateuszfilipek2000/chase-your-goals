@@ -161,7 +161,7 @@ List<Task> dummyTasks = [
     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
     DateTime.parse("2021-09-10"),
     DateTime.parse("2021-10-07"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     [],
   ),
   Task(
@@ -169,7 +169,7 @@ List<Task> dummyTasks = [
     null,
     DateTime.parse("2021-10-01"),
     null,
-    Status.inProgress,
+    NoteStatus.inProgress,
     [],
   ),
   Task(
@@ -177,7 +177,7 @@ List<Task> dummyTasks = [
     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
     DateTime.parse("2021-10-02"),
     DateTime.parse("2021-10-13"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     [],
   ),
   Task(
@@ -185,7 +185,7 @@ List<Task> dummyTasks = [
     "It's time for some math!",
     DateTime.parse("2021-10-03"),
     DateTime.parse("2021-10-05"),
-    Status.inProgress,
+    NoteStatus.inProgress,
     [],
   ),
 ];

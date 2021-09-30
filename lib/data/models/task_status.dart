@@ -1,4 +1,4 @@
-enum Status {
+enum NoteStatus {
   completed,
   inProgress,
 }

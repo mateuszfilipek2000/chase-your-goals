@@ -8,11 +8,10 @@ Flutter to-do app made to practice custom painters, the use of sqflite and to im
 
 ## Used packages: 
     Packages currently added to pubspec.yaml (They might not be used, as of right now, but will probably be used in future):
-    * Freezed
+    * Equatable
     * Bloc
     * Hydrated_bloc
     * Sqflite
-    * Moor
     * Test
     * Flutter_secure_storage
     * Bloc_test

@@ -16,7 +16,7 @@ class Task {
   final String? description;
   final DateTime dateAdded;
   final DateTime? dateDue;
-  final Status status;
+  final NoteStatus status;
   final List<String> tags;
 
   //TODO add tag colours to db

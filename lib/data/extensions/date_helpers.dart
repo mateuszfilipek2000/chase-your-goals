@@ -1,6 +1,7 @@
-extension DashedDate on DateTime {
+extension Formatting on DateTime {
   String getDashedDate() =>
       "$year-${month.addLeadingZeros(2)}-${day.addLeadingZeros(2)}";
+  String get time => "${hour.addLeadingZeros(2)}:${minute.addLeadingZeros(2)}";
 }
 
 extension LeadingZeros on int {
