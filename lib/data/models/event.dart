@@ -1,6 +1,5 @@
 import 'package:chase_your_goals/data/models/event_repeat_modes.dart';
 import 'package:chase_your_goals/data/models/note.dart';
-import 'package:chase_your_goals/data/models/task_status.dart';
 import 'package:chase_your_goals/screens/task_adding/bloc/task_state.dart';
 
 class Event extends Note {
@@ -9,15 +8,17 @@ class Event extends Note {
     String? description,
     DateTime dateAdded,
     DateTime? dateFinished,
-    NoteStatus status,
     this.dateDue,
-    this.repeatMode,
-  ) : super(
+    this.repeatMode, {
+    String? color,
+    String? tags,
+  }) : super(
           title,
           description,
           dateAdded,
           dateFinished,
-          status,
+          color: color,
+          tags: tags,
         );
 
   final DateTime dateDue;
@@ -30,7 +31,6 @@ class Event extends Note {
         state.description,
         DateTime.now(),
         null,
-        NoteStatus.inProgress,
         state.dueDate!,
         state.repeatMode,
       );

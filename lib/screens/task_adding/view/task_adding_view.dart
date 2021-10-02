@@ -53,11 +53,13 @@ class TaskAddingView extends StatelessWidget {
                   //if due date is not null then the object is an event
                   await context.read<DatabaseRepository>().addTask(
                         Event.fromTaskState(state),
+                        tagsAll: state.tags ?? "",
                       );
                 } else {
                   //adding note
                   await context.read<DatabaseRepository>().addTask(
                         Note.fromTaskState(state),
+                        tagsAll: state.tags ?? "",
                       );
                 }
               }

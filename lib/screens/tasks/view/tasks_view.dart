@@ -59,8 +59,13 @@ class TasksView extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: IconButton(
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed('/task_adding'),
+                        onPressed: () => Navigator.of(context)
+                            .pushNamed('/task_adding')
+                            .then(
+                              (value) => context.read<TaskViewingBloc>().add(
+                                    const TaskViewingRequestNotes(),
+                                  ),
+                            ),
                         icon: const Icon(
                           Icons.add_rounded,
                         ),
@@ -70,14 +75,18 @@ class TasksView extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () => context
+                    .read<TaskViewingBloc>()
+                    .add(const TaskViewingRequestNotes()),
                 child: Text(
                   "Notes",
                   style: Theme.of(context).textTheme.headline6,
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () => context
+                    .read<TaskViewingBloc>()
+                    .add(const TaskViewingRequestEvents()),
                 child: Text(
                   "Events",
                   style: Theme.of(context)
@@ -96,63 +105,82 @@ class TasksView extends StatelessWidget {
           BlocBuilder<TaskViewingBloc, TaskViewingState>(
             builder: (context, state) {
               if (state is TaskViewingLoading) {
-                return const Center(
-                  child: DimensionalCircularProgressIndicator(),
+                return const Expanded(
+                  child: Center(
+                    child: DimensionalCircularProgressIndicator(),
+                  ),
                 );
               } else if (state is TaskViewingLoadingSuccess) {
                 return Expanded(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 8.0,
-                      crossAxisSpacing: 8.0,
-                      childAspectRatio: 1.2,
-                    ),
-                    itemCount: state.tasks.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: DatabaseRepository.instance.getNotes,
-                        child: GridTile(
-                          header: GridTileBar(
-                            title: Text(
-                              state.tasks[index].title,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 8.0,
+                        crossAxisSpacing: 8.0,
+                        childAspectRatio: 1.2,
+                      ),
+                      itemCount: state.tasks.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: DatabaseRepository.instance.getNotes,
+                          child: GridTile(
+                            header: GridTileBar(
+                              title: Text(
+                                state.tasks[index].title,
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                              subtitle: state.tasks[index].description == null
+                                  ? null
+                                  : Text(
+                                      state.tasks[index].description!,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          Theme.of(context).textTheme.bodyText2,
+                                    ),
                             ),
-                            subtitle: state.tasks[index].description == null
-                                ? null
-                                : Text(
-                                    state.tasks[index].description!,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+                            footer: GridTileBar(
+                              title: Text(
+                                "Added:",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                              subtitle: Text(
+                                state.tasks[index].dateAdded.getDashedDate(),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodyText2,
+                              ),
+                            ),
+                            //TODO ADD COLOUR BASED ON TAG
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: state.tasks[index].color == null
+                                    ? Colors.yellowAccent
+                                    : Color(
+                                        int.parse(
+                                          state.tasks[index].color!,
+                                          radix: 16,
+                                        ),
+                                      ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context)
+                                        .shadowColor
+                                        .withOpacity(0.4),
+                                    spreadRadius: 1,
+                                    blurRadius: 2,
+                                    offset: const Offset(1, 1),
                                   ),
-                          ),
-                          footer: GridTileBar(
-                            title: const Text("Added:"),
-                            subtitle: Text(
-                              state.tasks[index].dateAdded.getDashedDate(),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                                ],
+                              ),
                             ),
                           ),
-                          //TODO ADD COLOUR BASED ON TAG
-                          child: Container(
-                            decoration: BoxDecoration(
-                              //color: state.tasks[index].color,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme.of(context)
-                                      .shadowColor
-                                      .withOpacity(0.4),
-                                  spreadRadius: 1,
-                                  blurRadius: 2,
-                                  offset: const Offset(1, 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 );
               } else {

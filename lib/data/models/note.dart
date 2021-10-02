@@ -6,20 +6,22 @@ class Note {
     this.title,
     this.description,
     this.dateAdded,
-    this.dateFinished,
-    this.status,
-  );
+    this.dateFinished, {
+    this.tags,
+    this.color,
+  });
   final String title;
   final String? description;
   final DateTime dateAdded;
   final DateTime? dateFinished;
-  final NoteStatus status;
+  final String? tags;
+  final String? color;
 
   factory Note.fromTaskState(TaskState state) => Note(
         state.title,
         state.description,
         DateTime.now(),
         null,
-        NoteStatus.inProgress,
+        tags: state.tags,
       );
 }

@@ -8,4 +8,8 @@ class TaskViewingRequestNotes extends TaskViewingEvent {
   const TaskViewingRequestNotes({this.page = 1});
 }
 
-class TaskViewingRequestEvents extends TaskViewingEvent {}
+class TaskViewingRequestEvents extends TaskViewingEvent {
+  final int page;
+
+  const TaskViewingRequestEvents({this.page = 1});
+}

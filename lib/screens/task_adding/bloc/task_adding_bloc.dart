@@ -30,13 +30,13 @@ class TaskAddingBloc extends Bloc<TaskEvent, TaskState> {
             state.description,
             DateTime.now(),
             null,
-            NoteStatus.inProgress,
           ),
         );
         emit(state.copyWith(status: const TaskSubmittingSuccess()));
       } catch (e) {
-        if (e.runtimeType == Exception)
+        if (e.runtimeType == Exception) {
           emit(state.copyWith(status: TaskSubmittingFailure(e as Exception)));
+        }
       }
     });
   }
