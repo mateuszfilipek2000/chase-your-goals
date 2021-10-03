@@ -116,7 +116,7 @@ class TasksView extends StatelessWidget {
           ),
           BlocBuilder<TaskViewingBloc, TaskViewingState>(
             builder: (context, state) {
-              if (state is TaskViewingLoading) {
+              if (state is TaskViewingLoading || state is TaskViewingInitial) {
                 return const Expanded(
                   child: Center(
                     child: DimensionalCircularProgressIndicator(),
@@ -196,9 +196,11 @@ class TasksView extends StatelessWidget {
                   ),
                 );
               } else {
-                return const Center(
-                  child: Text(
-                      "There's been some kind of problem with loading your tasks, sorry :c"),
+                return const Expanded(
+                  child: Center(
+                    child: Text(
+                        "There's been some kind of problem with loading your tasks, sorry :c"),
+                  ),
                 );
               }
             },
@@ -209,133 +211,133 @@ class TasksView extends StatelessWidget {
   }
 }
 
-List<Task> dummyTasks = [
-  Task(
-    "Make a to-do app!",
-    "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
-    DateTime.parse("2021-09-10"),
-    DateTime.parse("2021-10-07"),
-    NoteStatus.inProgress,
-    ["Programming", "Learning"],
-  ),
-  Task(
-    "Watch some tv",
-    null,
-    DateTime.parse("2021-10-01"),
-    null,
-    NoteStatus.inProgress,
-    ["Free time"],
-  ),
-  Task(
-    "Write a letter to Mon",
-    "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
-    DateTime.parse("2021-10-02"),
-    DateTime.parse("2021-10-13"),
-    NoteStatus.inProgress,
-    ["Friends", "Social"],
-  ),
-  Task(
-    "Learn integrals",
-    "It's time for some math!",
-    DateTime.parse("2021-10-03"),
-    DateTime.parse("2021-10-05"),
-    NoteStatus.inProgress,
-    ["Math", "Uni"],
-  ),
-  Task(
-    "Make a to-do app!",
-    "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
-    DateTime.parse("2021-09-10"),
-    DateTime.parse("2021-10-07"),
-    NoteStatus.inProgress,
-    ["Programming", "Learning"],
-  ),
-  Task(
-    "Watch some tv",
-    null,
-    DateTime.parse("2021-10-01"),
-    null,
-    NoteStatus.inProgress,
-    ["Free time"],
-  ),
-  Task(
-    "Write a letter to Mon",
-    "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
-    DateTime.parse("2021-10-02"),
-    DateTime.parse("2021-10-13"),
-    NoteStatus.inProgress,
-    ["Friends", "Social"],
-  ),
-  Task(
-    "Learn integrals",
-    "It's time for some math!",
-    DateTime.parse("2021-10-03"),
-    DateTime.parse("2021-10-05"),
-    NoteStatus.inProgress,
-    ["Math", "Uni"],
-  ),
-  Task(
-    "Make a to-do app!",
-    "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
-    DateTime.parse("2021-09-10"),
-    DateTime.parse("2021-10-07"),
-    NoteStatus.inProgress,
-    ["Programming", "Learning"],
-  ),
-  Task(
-    "Watch some tv",
-    null,
-    DateTime.parse("2021-10-01"),
-    null,
-    NoteStatus.inProgress,
-    ["Free time"],
-  ),
-  Task(
-    "Write a letter to Mon",
-    "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
-    DateTime.parse("2021-10-02"),
-    DateTime.parse("2021-10-13"),
-    NoteStatus.inProgress,
-    ["Friends", "Social"],
-  ),
-  Task(
-    "Learn integrals",
-    "It's time for some math!",
-    DateTime.parse("2021-10-03"),
-    DateTime.parse("2021-10-05"),
-    NoteStatus.inProgress,
-    ["Math", "Uni"],
-  ),
-  Task(
-    "Make a to-do app!",
-    "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
-    DateTime.parse("2021-09-10"),
-    DateTime.parse("2021-10-07"),
-    NoteStatus.inProgress,
-    ["Programming", "Learning"],
-  ),
-  Task(
-    "Watch some tv",
-    null,
-    DateTime.parse("2021-10-01"),
-    null,
-    NoteStatus.inProgress,
-    ["Free time"],
-  ),
-  Task(
-    "Write a letter to Mon",
-    "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
-    DateTime.parse("2021-10-02"),
-    DateTime.parse("2021-10-13"),
-    NoteStatus.inProgress,
-    ["Friends", "Social"],
-  ),
-  Task(
-    "Learn integrals",
-    "It's time for some math!",
-    DateTime.parse("2021-10-03"),
-    DateTime.parse("2021-10-05"),
-    NoteStatus.inProgress,
-    ["Math", "Uni"],
-  ),
-];
+// List<Task> dummyTasks = [
+//   Task(
+//     "Make a to-do app!",
+//     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
+//     DateTime.parse("2021-09-10"),
+//     DateTime.parse("2021-10-07"),
+//     NoteStatus.inProgress,
+//     ["Programming", "Learning"],
+//   ),
+//   Task(
+//     "Watch some tv",
+//     null,
+//     DateTime.parse("2021-10-01"),
+//     null,
+//     NoteStatus.inProgress,
+//     ["Free time"],
+//   ),
+//   Task(
+//     "Write a letter to Mon",
+//     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
+//     DateTime.parse("2021-10-02"),
+//     DateTime.parse("2021-10-13"),
+//     NoteStatus.inProgress,
+//     ["Friends", "Social"],
+//   ),
+//   Task(
+//     "Learn integrals",
+//     "It's time for some math!",
+//     DateTime.parse("2021-10-03"),
+//     DateTime.parse("2021-10-05"),
+//     NoteStatus.inProgress,
+//     ["Math", "Uni"],
+//   ),
+//   Task(
+//     "Make a to-do app!",
+//     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
+//     DateTime.parse("2021-09-10"),
+//     DateTime.parse("2021-10-07"),
+//     NoteStatus.inProgress,
+//     ["Programming", "Learning"],
+//   ),
+//   Task(
+//     "Watch some tv",
+//     null,
+//     DateTime.parse("2021-10-01"),
+//     null,
+//     NoteStatus.inProgress,
+//     ["Free time"],
+//   ),
+//   Task(
+//     "Write a letter to Mon",
+//     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
+//     DateTime.parse("2021-10-02"),
+//     DateTime.parse("2021-10-13"),
+//     NoteStatus.inProgress,
+//     ["Friends", "Social"],
+//   ),
+//   Task(
+//     "Learn integrals",
+//     "It's time for some math!",
+//     DateTime.parse("2021-10-03"),
+//     DateTime.parse("2021-10-05"),
+//     NoteStatus.inProgress,
+//     ["Math", "Uni"],
+//   ),
+//   Task(
+//     "Make a to-do app!",
+//     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
+//     DateTime.parse("2021-09-10"),
+//     DateTime.parse("2021-10-07"),
+//     NoteStatus.inProgress,
+//     ["Programming", "Learning"],
+//   ),
+//   Task(
+//     "Watch some tv",
+//     null,
+//     DateTime.parse("2021-10-01"),
+//     null,
+//     NoteStatus.inProgress,
+//     ["Free time"],
+//   ),
+//   Task(
+//     "Write a letter to Mon",
+//     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
+//     DateTime.parse("2021-10-02"),
+//     DateTime.parse("2021-10-13"),
+//     NoteStatus.inProgress,
+//     ["Friends", "Social"],
+//   ),
+//   Task(
+//     "Learn integrals",
+//     "It's time for some math!",
+//     DateTime.parse("2021-10-03"),
+//     DateTime.parse("2021-10-05"),
+//     NoteStatus.inProgress,
+//     ["Math", "Uni"],
+//   ),
+//   Task(
+//     "Make a to-do app!",
+//     "Oh I can't wait for it to happen, I'll finally be able to keep track of my tasks!",
+//     DateTime.parse("2021-09-10"),
+//     DateTime.parse("2021-10-07"),
+//     NoteStatus.inProgress,
+//     ["Programming", "Learning"],
+//   ),
+//   Task(
+//     "Watch some tv",
+//     null,
+//     DateTime.parse("2021-10-01"),
+//     null,
+//     NoteStatus.inProgress,
+//     ["Free time"],
+//   ),
+//   Task(
+//     "Write a letter to Mon",
+//     "It's been a really long time since I last spoke to Monica, I should let her know how things are here, maybe send her a gift!",
+//     DateTime.parse("2021-10-02"),
+//     DateTime.parse("2021-10-13"),
+//     NoteStatus.inProgress,
+//     ["Friends", "Social"],
+//   ),
+//   Task(
+//     "Learn integrals",
+//     "It's time for some math!",
+//     DateTime.parse("2021-10-03"),
+//     DateTime.parse("2021-10-05"),
+//     NoteStatus.inProgress,
+//     ["Math", "Uni"],
+//   ),
+// ];

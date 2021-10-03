@@ -9,10 +9,10 @@ import 'package:chase_your_goals/data/models/tag.dart';
 import 'package:chase_your_goals/data/models/task_status.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
+import 'package:chase_your_goals/data/extensions/date_helpers.dart';
 import 'dart:math' as math;
 
 class DatabaseRepository {
@@ -264,5 +264,61 @@ class DatabaseRepository {
     print(query);
     print(res);
     if (res == 0) throw Exception("Couldn't insert into db");
+  }
+
+  ///returns map of user activity in current week (number of events marked as finished)
+  ///result looks like this {
+  /// "1": x, starting at 1, ending at 7 (1 is monday, 7 is sunday)
+  ///...
+  Future<Map<int, int>> getWeeklyActivity(DateTime day) async {
+    Map<int, int> results = {};
+    String dashedDay = day.getDashedDate();
+
+    String query = "SELECT ";
+    for (var i = 1; i < 8; i++) {
+      query +=
+          "(SELECT COUNT(Events.id) FROM EVENTS WHERE DATE(date_finished) == DATE('$dashedDay', '-' || strftime('%w','${day.subtract(Duration(days: i)).getDashedDate()}')|| ' day') ) AS '${day.subtract(Duration(days: day.weekday - i)).weekday}' ";
+      if (i != 7) query += ",";
+    }
+    print(query);
+
+    return results;
+  }
+
+  ///returns map of user upcoming activity in current month (number of events with date due for days of the month)
+  ///result looks like this {
+  /// "1": x, starting at 1, ending at month length
+  ///...
+  Future<Map<int, int>> getMonthlyActivity(DateTime day) async {
+    Map<int, int> results = {};
+    String dashedDay = day.getDashedDate();
+
+    String query = "SELECT ";
+    for (var i = 1; i <= DateTime(day.year, day.month + 1, 0).day; i++) {
+      query +=
+          "(SELECT COUNT(Events.id) FROM EVENTS WHERE DATE(date_due) == DATE('${day.year}-${day.month}-${i.addLeadingZeros(2)}')) AS '$i' ";
+      if (i != DateTime(day.year, day.month + 1, 0).day) query += ",";
+    }
+    print(query);
+
+    return results;
+  }
+
+  ///returns map of user upcoming activity in upcoming 7 days (number of events with date due for the next seven days)
+  ///result looks like this {
+  /// "1":
+  ///...
+  Future<Map<int, int>> get upcomingEvents async {
+    Map<int, int> results = {};
+    DateTime day = DateTime.now();
+
+    String query =
+        "SELECT title, description, Events.date_added, date_finished, DATE(date_due), repeat_mode "
+        "FROM Events "
+        "WHERE date_due BETWEEN '${day.getDashedDate()}' AND '${day.subtract(const Duration(days: 7)).getDashedDate()}'";
+
+    print(query);
+
+    return results;
   }
 }
