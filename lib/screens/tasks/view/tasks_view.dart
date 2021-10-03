@@ -1,3 +1,4 @@
+import 'package:chase_your_goals/core/constants/content_type.dart';
 import 'package:chase_your_goals/data/extensions/date_helpers.dart';
 import 'package:chase_your_goals/data/models/task.dart';
 import 'package:chase_your_goals/data/models/task_status.dart';
@@ -5,11 +6,9 @@ import 'package:chase_your_goals/data/repositories/database_repository.dart';
 import 'package:chase_your_goals/screens/tasks/bloc/tasks_viewing_bloc.dart';
 import 'package:chase_your_goals/screens/tasks/bloc/tasks_viewing_events.dart';
 import 'package:chase_your_goals/screens/tasks/bloc/tasks_viewing_state.dart';
-import 'package:chase_your_goals/screens/tasks/widgets/task_card.dart';
 import 'package:chase_your_goals/widgets/dimensional_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:chase_your_goals/screens/tasks/cubit/tasks_cubit.dart';
 
 class TasksPage extends StatelessWidget {
   const TasksPage({Key? key}) : super(key: key);
@@ -35,67 +34,77 @@ class TasksView extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        autocorrect: true,
-                        decoration: InputDecoration(
-                          icon: const Icon(Icons.search_outlined),
-                          hintText: "Search",
-                          hintStyle: TextStyle(
-                            color: Theme.of(context).disabledColor,
+          BlocBuilder<TaskViewingBloc, TaskViewingState>(
+            builder: (context, state) {
+              return Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            autocorrect: true,
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.search_outlined),
+                              hintText: "Search",
+                              hintStyle: TextStyle(
+                                color: Theme.of(context).disabledColor,
+                              ),
+                            ),
+                            style: Theme.of(context).textTheme.button,
                           ),
                         ),
-                        style: Theme.of(context).textTheme.button,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        onPressed: () => Navigator.of(context)
-                            .pushNamed('/task_adding')
-                            .then(
-                              (value) => context.read<TaskViewingBloc>().add(
-                                    const TaskViewingRequestNotes(),
-                                  ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            onPressed: () => Navigator.of(context)
+                                .pushNamed('/task_adding')
+                                .then(
+                                  (value) =>
+                                      context.read<TaskViewingBloc>().add(
+                                            const TaskViewingRequestNotes(),
+                                          ),
+                                ),
+                            icon: const Icon(
+                              Icons.add_rounded,
                             ),
-                        icon: const Icon(
-                          Icons.add_rounded,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              TextButton(
-                onPressed: () => context
-                    .read<TaskViewingBloc>()
-                    .add(const TaskViewingRequestNotes()),
-                child: Text(
-                  "Notes",
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-              ),
-              TextButton(
-                onPressed: () => context
-                    .read<TaskViewingBloc>()
-                    .add(const TaskViewingRequestEvents()),
-                child: Text(
-                  "Events",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6
-                      ?.copyWith(color: Theme.of(context).disabledColor),
-                ),
-              ),
-            ],
+                  ),
+                  TextButton(
+                    onPressed: () => context
+                        .read<TaskViewingBloc>()
+                        .add(const TaskViewingRequestNotes()),
+                    child: Text(
+                      "Notes",
+                      style: state is TaskViewingLoadingSuccess &&
+                              state.contentType == ContentType.notes
+                          ? Theme.of(context).textTheme.headline6
+                          : Theme.of(context).textTheme.headline6?.copyWith(
+                              color: Theme.of(context).disabledColor),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => context
+                        .read<TaskViewingBloc>()
+                        .add(const TaskViewingRequestEvents()),
+                    child: Text(
+                      "Events",
+                      style: state is TaskViewingLoadingSuccess &&
+                              state.contentType == ContentType.events
+                          ? Theme.of(context).textTheme.headline6
+                          : Theme.of(context).textTheme.headline6?.copyWith(
+                              color: Theme.of(context).disabledColor),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           const Divider(
             //color: Theme.of(context).disabledColor,

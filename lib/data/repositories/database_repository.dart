@@ -86,9 +86,9 @@ class DatabaseRepository {
     return results;
   }
 
-  Future<List<Note>> getEvents({NoteStatus? status, Tag? tag}) async {
+  Future<List<Event>> getEvents({NoteStatus? status, Tag? tag}) async {
     //List<Map> notes = await (await db).rawQuery("SELECT * FROM Notes");
-    List<Note> results = [];
+    List<Event> results = [];
 
     String query =
         "SELECT Events.title as title, Events.description as description, DATETIME(Events.date_added) as date_added, Events.date_finished as date_finished, Events.date_due as date_due, Events.repeat_mode as repeat_mode, group_concat(DISTINCT Tags.name) as tags, Tags.color AS color "
@@ -104,7 +104,7 @@ class DatabaseRepository {
 
     List<Map> events = await (await db).rawQuery(query);
 
-    print(events);
+    //print(events);
     for (Map event in events) {
       print(event);
       results.add(
@@ -112,11 +112,15 @@ class DatabaseRepository {
           event["title"],
           event["description"],
           DateTime.parse(event["date_added"]),
-          event["date_finished"] == null || event["date_finished"] == ""
-              ? DateTime.parse(event["date_finished"])
-              : null,
-          event["date_due"],
-          event["repeat_mode"] == null || event["repeat_mode"] == ""
+          event["date_finished"] == null ||
+                  event["date_finished"] == "" ||
+                  event["date_finished"] == "NULL"
+              ? null
+              : DateTime.parse(event["date_finished"]),
+          DateTime.parse(event["date_due"]),
+          event["repeat_mode"] == null ||
+                  event["repeat_mode"] == "" ||
+                  event["repeat_mode"] == "NULL"
               ? null
               : event["repeat_mode"],
           color: event["color"] == null ||
@@ -189,7 +193,7 @@ class DatabaseRepository {
             tag = tag.replaceAll(" ", "");
 
             String query = "INSERT INTO EventsWithTags "
-                "(tagID, noteID, importance) "
+                "(tagID, eventID, importance) "
                 "VALUES "
                 "((SELECT id FROM Tags WHERE name='$tag'), (SELECT id FROM Events WHERE title='${object.title}'), ${importance++})";
 
