@@ -41,7 +41,7 @@ class DatabaseRepository {
   Future<String> get databasePath async =>
       (await getDatabasesPath()) + "cyg_database.db";
 
-  Future<List<Note>> getNotes({NoteStatus? status, Tag? tag}) async {
+  Future<List<Note>> getNotes({NoteStatus? status, String? startsWith}) async {
     //List<Map> notes = await (await db).rawQuery("SELECT * FROM Notes");
     List<Note> results = [];
 
@@ -49,13 +49,21 @@ class DatabaseRepository {
         "SELECT Notes.title as title, Notes.description as description, DATETIME(Notes.date_added) as date_added, Notes.date_finished as date_finished, group_concat(DISTINCT Tags.name) as tags, Tags.color as color "
         "FROM NotesWithTags "
         "INNER JOIN Notes ON NotesWithTags.noteID = Notes.id "
-        "INNER JOIN Tags ON NotesWithTags.tagID = Tags.id "
-        "GROUP BY Notes.id "
+        "INNER JOIN Tags ON NotesWithTags.tagID = Tags.id ";
+    if (startsWith != null) {
+      query += "WHERE Notes.title "
+          "LIKE '$startsWith%' ";
+    }
+    query += "GROUP BY Notes.id "
         "UNION "
         "SELECT title, description, DATETIME(date_added), date_finished, null AS tags, null as color "
         "FROM Notes "
-        "WHERE id not in (SELECT noteID FROM NotesWithTags) "
-        "ORDER BY DATETIME(Notes.date_added) DESC";
+        "WHERE id not in (SELECT noteID FROM NotesWithTags) ";
+    if (startsWith != null) {
+      query += "AND Notes.title "
+          "LIKE '$startsWith%' ";
+    }
+    query += "ORDER BY DATETIME(Notes.date_added) DESC";
 
     List<Map> notes = await (await db).rawQuery(query);
 
@@ -86,7 +94,8 @@ class DatabaseRepository {
     return results;
   }
 
-  Future<List<Event>> getEvents({NoteStatus? status, Tag? tag}) async {
+  Future<List<Event>> getEvents(
+      {NoteStatus? status, Tag? tag, String? startsWith}) async {
     //List<Map> notes = await (await db).rawQuery("SELECT * FROM Notes");
     List<Event> results = [];
 
@@ -94,13 +103,21 @@ class DatabaseRepository {
         "SELECT Events.title as title, Events.description as description, DATETIME(Events.date_added) as date_added, Events.date_finished as date_finished, Events.date_due as date_due, Events.repeat_mode as repeat_mode, group_concat(DISTINCT Tags.name) as tags, Tags.color AS color "
         "FROM EventsWithTags "
         "INNER JOIN Events ON EventsWithTags.eventID = Events.id "
-        "INNER JOIN Tags ON EventsWithTags.tagID = Tags.id "
-        "GROUP BY Events.id "
+        "INNER JOIN Tags ON EventsWithTags.tagID = Tags.id ";
+    if (startsWith != null) {
+      query += "WHERE Events.title "
+          "LIKE '$startsWith%' ";
+    }
+    query += "GROUP BY Events.id "
         "UNION "
         "SELECT title, description, DATETIME(date_added), date_finished, date_due, repeat_mode, null AS tags, null AS color  "
         "FROM Events "
-        "WHERE id not in (SELECT eventID FROM EventsWithTags) "
-        "ORDER BY DATETIME(Events.date_added) DESC";
+        "WHERE id not in (SELECT eventID FROM EventsWithTags) ";
+    if (startsWith != null) {
+      query += "AND Events.title "
+          "LIKE '$startsWith%' ";
+    }
+    query += "ORDER BY DATETIME(Events.date_added) DESC";
 
     List<Map> events = await (await db).rawQuery(query);
 

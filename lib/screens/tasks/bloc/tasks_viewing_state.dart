@@ -27,3 +27,9 @@ class TaskViewingLoadingFailure extends TaskViewingState {
 
   const TaskViewingLoadingFailure(this.exception);
 }
+
+class TaskViewingSearching extends TaskViewingState {
+  // final String query;
+
+  const TaskViewingSearching();
+}

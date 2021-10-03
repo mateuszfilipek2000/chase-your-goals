@@ -55,6 +55,9 @@ class TasksView extends StatelessWidget {
                               ),
                             ),
                             style: Theme.of(context).textTheme.button,
+                            onChanged: (String val) => context
+                                .read<TaskViewingBloc>()
+                                .add(TaskViewingSearch(val)),
                           ),
                         ),
                         Align(

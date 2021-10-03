@@ -1,3 +1,4 @@
+import 'package:chase_your_goals/screens/details/view/details_view.dart';
 import 'package:chase_your_goals/screens/timer/view/stopwatch_view.dart';
 import 'package:chase_your_goals/screens/timer/view/timer_view.dart';
 import 'package:chase_your_goals/screens/about/view/about_view.dart';
@@ -38,6 +39,8 @@ class AppRoutes {
               FadeTransition(opacity: animation, child: child),
           fullscreenDialog: true,
         );
+      case '/details': 
+        return MaterialPageRoute(builder: (_) => const DetailsPage());
       default:
         return MaterialPageRoute(builder: (_) => const HomePage());
     }
